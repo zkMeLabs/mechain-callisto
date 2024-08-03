@@ -8,3 +8,7 @@ config.yaml
 
 # Coverage
 coverage.*
+deploy/*
+!deploy/dev.sh
+!deploy/config.yaml
+!deploy/docker-compose.yaml
