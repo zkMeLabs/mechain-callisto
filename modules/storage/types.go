@@ -1,4 +1,4 @@
-package evm
+package storage
 
 type createGroupEvent struct {
 	GroupId    string `json:"group_id"`

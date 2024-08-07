@@ -1,4 +1,4 @@
-package evm
+package storage
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -29,5 +29,5 @@ func NewModule(cdc codec.Codec, db *database.Db) *Module {
 
 // Name implements modules.Module
 func (m *Module) Name() string {
-	return "evm"
+	return "storage"
 }

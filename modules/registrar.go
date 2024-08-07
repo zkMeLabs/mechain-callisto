@@ -2,8 +2,8 @@ package modules
 
 import (
 	"github.com/forbole/bdjuno/v4/modules/actions"
-	"github.com/forbole/bdjuno/v4/modules/evm"
 	"github.com/forbole/bdjuno/v4/modules/gov"
+	"github.com/forbole/bdjuno/v4/modules/storage"
 	"github.com/forbole/bdjuno/v4/modules/types"
 
 	"github.com/forbole/juno/v5/modules/pruning"
@@ -86,7 +86,7 @@ func (r *Registrar) BuildModules(ctx registrar.Context) jmodules.Modules {
 	stakingModule := staking.NewModule(sources.StakingSource, cdc, db)
 	govModule := gov.NewModule(sources.GovSource, authModule, distrModule, inflationModule, mintModule, slashingModule, stakingModule, cdc, db)
 	upgradeModule := upgrade.NewModule(db, stakingModule)
-	evmModule := evm.NewModule(cdc, db)
+	storageModule := storage.NewModule(cdc, db)
 
 	return []jmodules.Module{
 		messages.NewModule(r.parser, cdc, ctx.Database),
@@ -108,6 +108,6 @@ func (r *Registrar) BuildModules(ctx registrar.Context) jmodules.Modules {
 		slashingModule,
 		stakingModule,
 		upgradeModule,
-		evmModule,
+		storageModule,
 	}
 }

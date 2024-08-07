@@ -1,4 +1,4 @@
-package evm
+package storage
 
 import (
 	"fmt"
@@ -91,7 +91,7 @@ func (m *Module) handleCreateGroup(values []abcitypes.EventAttribute) {
 		},
 	})
 	if err != nil {
-		log.Error().Str("module", "evm").Err(err)
+		log.Error().Str("module", "storage").Err(err)
 	}
 }
 
@@ -171,7 +171,7 @@ func (m *Module) handleCreateBucket(values []abcitypes.EventAttribute) {
 		},
 	})
 	if err != nil {
-		log.Error().Str("module", "evm").Err(err)
+		log.Error().Str("module", "storage").Err(err)
 	}
 }
 
@@ -274,7 +274,7 @@ func (m *Module) handleCreateObject(values []abcitypes.EventAttribute) {
 		},
 	})
 	if err != nil {
-		log.Error().Str("module", "evm").Err(err)
+		log.Error().Str("module", "storage").Err(err)
 	}
 }
 
