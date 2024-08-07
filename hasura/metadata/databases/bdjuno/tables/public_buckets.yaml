@@ -1,0 +1,30 @@
+table:
+  name: buckets
+  schema: public
+array_relationships:
+  - name: objects_info
+    using:
+      foreign_key_constraint_on:
+        column: bucket_name
+        table:
+          name: objects
+          schema: public
+select_permissions:
+  - permission:
+      allow_aggregations: true
+      columns:
+        - id
+        - bucket_name
+        - owner
+        - visibility
+        - source_type
+        - create_at
+        - payment_address
+        - bucket_status
+        - tags
+        - charged_read_quota
+        - global_virtual_group_family_id
+        - sp_as_delegated_agent_disabled
+      filter: {}
+      limit: 100
+    role: anonymous

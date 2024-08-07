@@ -72,6 +72,24 @@ type Query {
         limit: Int
         count_total: Boolean
     ): ActionUnbondingDelegationResponse
+
+    action_groups(
+        offset: Int
+        limit: Int
+        count_total: Boolean
+    ): ActionGroupsResponse
+
+    action_buckets(
+        offset: Int
+        limit: Int
+        count_total: Boolean
+    ): ActionBucketsResponse
+
+    action_objects(
+        offset: Int
+        limit: Int
+        count_total: Boolean
+    ): ActionObjectsResponse
 }
 
 type ActionBalance {
@@ -106,10 +124,28 @@ type ActionValidatorCommissionAmount {
     coins: [ActionCoin]
 }
 
+type ActionGroupsResponse {
+    groups: [ActionGroups]
+    pagination: ActionPagination
+}
+
+type ActionBucketsResponse {
+    buckets: [ActionBuckets]
+    pagination: ActionPagination
+}
+
+type ActionObjectsResponse {
+    objects: [ActionObjects]
+    pagination: ActionPagination
+}
+
 scalar ActionCoin
 scalar ActionDelegation
 scalar ActionEntry
 scalar ActionPagination
 scalar ActionRedelegation
 scalar ActionUnbondingDelegation
+scalar ActionGroups
+scalar ActionBuckets
+scalar ActionObjects
 

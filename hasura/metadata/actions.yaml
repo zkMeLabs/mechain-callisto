@@ -236,6 +236,63 @@ actions:
   permissions:
   - role: anonymous
 
+- name: action_groups
+  definition:
+    kind: synchronous
+    handler: "{{ACTION_BASE_URL}}/groups"
+    output_type: ActionGroupsResponse
+    arguments:
+      - name: offset
+        type: Int
+      - name: limit
+        type: Int
+      - name: count_total
+        type: Boolean!
+    type: query
+    headers:
+      - value: application/json
+        name: Content-Type
+  permissions:
+    - role: anonymous
+
+- name: action_buckets
+  definition:
+    kind: synchronous
+    handler: "{{ACTION_BASE_URL}}/buckets"
+    output_type: ActionBucketsResponse
+    arguments:
+      - name: offset
+        type: Int
+      - name: limit
+        type: Int
+      - name: count_total
+        type: Boolean!
+    type: query
+    headers:
+      - value: application/json
+        name: Content-Type
+  permissions:
+    - role: anonymous
+
+- name: action_objects
+  definition:
+    kind: synchronous
+    handler: "{{ACTION_BASE_URL}}/objects"
+    output_type: ActionObjectsResponse
+    arguments:
+      - name: offset
+        type: Int
+      - name: limit
+        type: Int
+      - name: count_total
+        type: Boolean!
+    type: query
+    headers:
+      - value: application/json
+        name: Content-Type
+  permissions:
+    - role: anonymous
+
 ############### CUSTOM TYPES ###############
 custom_types:
   scalars:
@@ -245,6 +302,9 @@ custom_types:
   - name: ActionPagination
   - name: ActionRedelegation
   - name: ActionUnbondingDelegation
+  - name: ActionGroups
+  - name: ActionBuckets
+  - name: ActionObjects
 
   objects:
   - name: ActionBalance
@@ -289,3 +349,24 @@ custom_types:
     fields:
     - name: coins
       type: [ActionCoin]
+
+  - name: ActionGroupsResponse
+    fields:
+      - name: groups
+        type: [ActionGroups]
+      - name: pagination
+        type: ActionPagination
+
+  - name: ActionBucketsResponse
+    fields:
+      - name: buckets
+        type: [ActionBuckets]
+      - name: pagination
+        type: ActionPagination
+
+  - name: ActionObjectsResponse
+    fields:
+      - name: objects
+        type: [ActionObjects]
+      - name: pagination
+        type: ActionPagination

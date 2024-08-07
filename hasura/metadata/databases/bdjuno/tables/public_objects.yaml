@@ -1,0 +1,29 @@
+table:
+  name: objects
+  schema: public
+select_permissions:
+  - permission:
+      allow_aggregations: true
+      columns:
+        - id
+        - object_name
+        - bucket_name
+        - owner
+        - creator
+        - payload_size
+        - visibility
+        - content_type
+        - object_status
+        - redundancy_type
+        - source_type
+        - checksums
+        - tags
+        - is_updating
+        - create_at
+        - update_at
+        - update_by
+        - version
+        - local_virtual_group_id
+      filter: {}
+      limit: 100
+    role: anonymous
