@@ -12,3 +12,4 @@ deploy/*
 !deploy/dev.sh
 !deploy/config.yaml
 !deploy/docker-compose.yaml
+!deploy/genesis.json
