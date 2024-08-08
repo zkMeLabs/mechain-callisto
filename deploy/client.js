@@ -1,7 +1,4 @@
-// import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
-
-const ac = require('@apollo/client');
-const { ApolloClient, InMemoryCache, gql } = ac;
+const { ApolloClient, InMemoryCache, gql } = require('@apollo/client');
 
 // define GraphQL query
 const BUCKETS_QUERY = gql`
