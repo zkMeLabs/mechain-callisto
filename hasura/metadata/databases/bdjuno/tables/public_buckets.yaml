@@ -2,7 +2,7 @@ table:
   name: buckets
   schema: public
 array_relationships:
-  - name: objects_info
+  - name: objects
     using:
       foreign_key_constraint_on:
         column: bucket_name
