@@ -50,7 +50,6 @@ reset)
     docker-compose -f docker-compose.yaml down
     rm -rf ./data
     docker-compose -f docker-compose.yaml up -d
-    cp config.yaml ./data
 
     echo "wait 45s for graphql engine start..."
     for ((i=45; i>0; i-=3))
@@ -63,6 +62,7 @@ reset)
     hasura metadata apply --endpoint http://localhost:8080 --admin-secret 123456
 
     cd $project_path/deploy
+    cp config.yaml ./data
     ${bin} parse genesis-file --genesis-file-path ./genesis.json --home ./data
     #nohup ${bin} start --home ./data >./bdjuno.log 2>&1 &
     ${bin} start --home ./data
