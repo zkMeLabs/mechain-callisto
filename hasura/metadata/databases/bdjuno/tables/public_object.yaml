@@ -1,9 +1,9 @@
 table:
-  name: objects
+  name: object
   schema: public
 select_permissions:
   - permission:
-      allow_aggregations: true
+      allow_aggregations: false
       columns:
         - id
         - object_name
@@ -17,13 +17,14 @@ select_permissions:
         - redundancy_type
         - source_type
         - checksums
+        - create_at
+        - local_virtual_group_id
+        - height
         - tags
         - is_updating
-        - create_at
         - update_at
         - update_by
         - version
-        - local_virtual_group_id
       filter: {}
       limit: 100
     role: anonymous

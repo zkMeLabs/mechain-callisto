@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
@@ -35,34 +34,26 @@ func (m *Module) HandleBlock(
 func (m *Module) parseTransactionEvents(b *tmctypes.ResultBlock, txs []*juno.Tx) {
 	log.Debug().Str("module", "distribution").Int64("height", b.Block.Height)
 	for _, tx := range txs {
-		txTimestamp, err := time.Parse(time.RFC3339, tx.Timestamp)
-		if err != nil {
-			log.Error().Str("parseTransactionEvents  time.Parse err", err.Error())
-			continue
-		}
-
-		fmt.Println(txTimestamp)
-
 		for _, event := range tx.Events {
 			switch event.Type {
 			case EventTypeCreateGroup:
-				m.handleCreateGroup(event.Attributes)
+				m.handleCreateGroup(b.Block.Height, event.Attributes)
 			case EventTypeDeleteGroup:
-				m.handleDeleteGroup(event.Attributes)
+				m.handleDeleteGroup(b.Block.Height, event.Attributes)
 			case EventTypeCreateBucket:
-				m.handleCreateBucket(event.Attributes)
+				m.handleCreateBucket(b.Block.Height, event.Attributes)
 			case EventTypeDeleteBucket:
-				m.handleDeleteBucket(event.Attributes)
+				m.handleDeleteBucket(b.Block.Height, event.Attributes)
 			case EventTypeCreateObject:
-				m.handleCreateObject(event.Attributes)
+				m.handleCreateObject(b.Block.Height, event.Attributes)
 			case EventTypeDeleteObject:
-				m.handleDeleteObject(event.Attributes)
+				m.handleDeleteObject(b.Block.Height, event.Attributes)
 			}
 		}
 	}
 }
 
-func (m *Module) handleCreateGroup(values []abcitypes.EventAttribute) {
+func (m *Module) handleCreateGroup(height int64, values []abcitypes.EventAttribute) {
 	msg := &createGroupEvent{}
 	for _, v := range values {
 		switch v.Key {
@@ -81,7 +72,7 @@ func (m *Module) handleCreateGroup(values []abcitypes.EventAttribute) {
 
 	groupId, _ := strconv.ParseUint(msg.GroupId, 10, 64)
 
-	err := m.db.SaveGroups([]types.Groups{
+	err := m.db.SaveStorageGroup(height, []types.StorageGroup{
 		{
 			GroupId:    groupId,
 			GroupName:  msg.GroupName,
@@ -95,7 +86,7 @@ func (m *Module) handleCreateGroup(values []abcitypes.EventAttribute) {
 	}
 }
 
-func (m *Module) handleDeleteGroup(values []abcitypes.EventAttribute) {
+func (m *Module) handleDeleteGroup(height int64, values []abcitypes.EventAttribute) {
 	msg := &deleteGroupEvent{}
 	for _, v := range values {
 		switch v.Key {
@@ -109,7 +100,7 @@ func (m *Module) handleDeleteGroup(values []abcitypes.EventAttribute) {
 	}
 }
 
-func (m *Module) handleCreateBucket(values []abcitypes.EventAttribute) {
+func (m *Module) handleCreateBucket(height int64, values []abcitypes.EventAttribute) {
 	msg := &createBucketEvent{}
 	for _, v := range values {
 		switch v.Key {
@@ -156,7 +147,7 @@ func (m *Module) handleCreateBucket(values []abcitypes.EventAttribute) {
 	bucketId, _ := strconv.ParseUint(msg.BucketId, 10, 64)
 	createAt := time.Unix(msg.CreateAt, 0)
 
-	err := m.db.SaveBuckets([]types.Buckets{
+	err := m.db.SaveBucket(height, []types.Bucket{
 		{
 			BucketId:                   bucketId,
 			BucketName:                 msg.BucketName,
@@ -175,7 +166,7 @@ func (m *Module) handleCreateBucket(values []abcitypes.EventAttribute) {
 	}
 }
 
-func (m *Module) handleDeleteBucket(values []abcitypes.EventAttribute) {
+func (m *Module) handleDeleteBucket(height int64, values []abcitypes.EventAttribute) {
 	msg := &deleteBucketEvent{}
 	for _, v := range values {
 		switch v.Key {
@@ -197,7 +188,7 @@ func (m *Module) handleDeleteBucket(values []abcitypes.EventAttribute) {
 	}
 }
 
-func (m *Module) handleCreateObject(values []abcitypes.EventAttribute) {
+func (m *Module) handleCreateObject(height int64, values []abcitypes.EventAttribute) {
 	msg := &createObjectEvent{}
 	for _, v := range values {
 		switch v.Key {
@@ -255,7 +246,7 @@ func (m *Module) handleCreateObject(values []abcitypes.EventAttribute) {
 	objectId, _ := strconv.ParseUint(msg.ObjectId, 10, 64)
 	createAt := time.Unix(msg.CreateAt, 0)
 
-	err := m.db.SaveObjects([]types.Objects{
+	err := m.db.SaveObject(height, []types.Object{
 		{
 			ObjectId:            objectId,
 			ObjectName:          msg.ObjectName,
@@ -278,7 +269,7 @@ func (m *Module) handleCreateObject(values []abcitypes.EventAttribute) {
 	}
 }
 
-func (m *Module) handleDeleteObject(values []abcitypes.EventAttribute) {
+func (m *Module) handleDeleteObject(height int64, values []abcitypes.EventAttribute) {
 	msg := &deleteObjectEvent{}
 	for _, v := range values {
 		switch v.Key {

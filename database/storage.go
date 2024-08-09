@@ -7,34 +7,35 @@ import (
 	"github.com/forbole/bdjuno/v4/types"
 )
 
-func (db *Db) SaveGroups(groups []types.Groups) error {
+func (db *Db) SaveStorageGroup(height int64, groups []types.StorageGroup) error {
 	if len(groups) == 0 {
 		return nil
 	}
 
 	var accounts []types.Account
 
-	groupsQuery := `
-INSERT INTO groups(
-	id, group_name, owner, source_type, extra, tags
+	groupQuery := `
+INSERT INTO storage_group(
+	id, group_name, owner, source_type, extra, height, tags
 ) VALUES`
-	var groupsParams []interface{}
+	var groupParams []interface{}
 
 	for i, group := range groups {
 		// Prepare the account query
 		accounts = append(accounts, types.NewAccount(group.Owner))
 
 		// Prepare the group query
-		vi := i * 6
-		groupsQuery += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d,$%d),",
-			vi+1, vi+2, vi+3, vi+4, vi+5, vi+6)
+		vi := i * 7
+		groupQuery += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d,$%d,$%d),",
+			vi+1, vi+2, vi+3, vi+4, vi+5, vi+6, vi+7)
 
-		groupsParams = append(groupsParams,
+		groupParams = append(groupParams,
 			group.GroupId,
 			group.GroupName,
 			group.Owner,
 			group.SourceType,
 			group.Extra,
+			height,
 			group.Tags,
 		)
 	}
@@ -46,9 +47,9 @@ INSERT INTO groups(
 	}
 
 	// Store the groups
-	groupsQuery = groupsQuery[:len(groupsQuery)-1] // Remove trailing ","
-	groupsQuery += " ON CONFLICT DO NOTHING"
-	_, err = db.SQL.Exec(groupsQuery, groupsParams...)
+	groupQuery = groupQuery[:len(groupQuery)-1] // Remove trailing ","
+	groupQuery += " ON CONFLICT DO NOTHING"
+	_, err = db.SQL.Exec(groupQuery, groupParams...)
 	if err != nil {
 		return fmt.Errorf("error while storing groups: %s", err)
 	}
@@ -56,9 +57,9 @@ INSERT INTO groups(
 	return nil
 }
 
-func (db *Db) GetGroups(id uint64) (*types.Groups, error) {
-	var rows []*dbtypes.GroupsRow
-	err := db.Sqlx.Select(&rows, `SELECT * FROM groups WHERE id = $1`, id)
+func (db *Db) GetGroup(id uint64) (*types.StorageGroup, error) {
+	var rows []*dbtypes.StorageGroupRow
+	err := db.Sqlx.Select(&rows, `SELECT * FROM storage_group WHERE id = $1`, id)
 	if err != nil {
 		return nil, err
 	}
@@ -69,41 +70,42 @@ func (db *Db) GetGroups(id uint64) (*types.Groups, error) {
 
 	row := rows[0]
 
-	groups := types.NewGroups(
+	group := types.NewStorageGroup(
 		row.GroupId,
 		row.GroupName,
 		row.Owner,
 		row.SourceType,
 		row.Extra,
+		row.Height,
 		row.Tags,
 	)
-	return &groups, nil
+	return &group, nil
 }
 
-func (db *Db) SaveBuckets(buckets []types.Buckets) error {
+func (db *Db) SaveBucket(height int64, buckets []types.Bucket) error {
 	if len(buckets) == 0 {
 		return nil
 	}
 
 	var accounts []types.Account
 
-	bucketsQuery := `
-INSERT INTO buckets(
+	bucketQuery := `
+INSERT INTO bucket(
 	id, bucket_name, owner, visibility, source_type, create_at, payment_address, bucket_status, 
-    charged_read_quota, global_virtual_group_family_id, sp_as_delegated_agent_disabled, tags
+    charged_read_quota, global_virtual_group_family_id, height, sp_as_delegated_agent_disabled, tags
 ) VALUES`
-	var bucketsParams []interface{}
+	var bucketParams []interface{}
 
 	for i, bucket := range buckets {
 		// Prepare the account query
 		accounts = append(accounts, types.NewAccount(bucket.Owner))
 
 		// Prepare the bucket query
-		vi := i * 12
-		bucketsQuery += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d),",
-			vi+1, vi+2, vi+3, vi+4, vi+5, vi+6, vi+7, vi+8, vi+9, vi+10, vi+11, vi+12)
+		vi := i * 13
+		bucketQuery += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d),",
+			vi+1, vi+2, vi+3, vi+4, vi+5, vi+6, vi+7, vi+8, vi+9, vi+10, vi+11, vi+12, vi+13)
 
-		bucketsParams = append(bucketsParams,
+		bucketParams = append(bucketParams,
 			bucket.BucketId,
 			bucket.BucketName,
 			bucket.Owner,
@@ -114,6 +116,7 @@ INSERT INTO buckets(
 			bucket.BucketStatus,
 			bucket.ChargedReadQuota,
 			bucket.GlobalVirtualGroupFamilyId,
+			height,
 			bucket.SpAsDelegatedAgentDisabled,
 			bucket.Tags,
 		)
@@ -126,9 +129,9 @@ INSERT INTO buckets(
 	}
 
 	// Store the buckets
-	bucketsQuery = bucketsQuery[:len(bucketsQuery)-1] // Remove trailing ","
-	bucketsQuery += " ON CONFLICT DO NOTHING"
-	_, err = db.SQL.Exec(bucketsQuery, bucketsParams...)
+	bucketQuery = bucketQuery[:len(bucketQuery)-1] // Remove trailing ","
+	bucketQuery += " ON CONFLICT DO NOTHING"
+	_, err = db.SQL.Exec(bucketQuery, bucketParams...)
 	if err != nil {
 		return fmt.Errorf("error while storing buckets: %s", err)
 	}
@@ -136,9 +139,9 @@ INSERT INTO buckets(
 	return nil
 }
 
-func (db *Db) GetBuckets(id uint64) (*types.Buckets, error) {
-	var rows []*dbtypes.BucketsRow
-	err := db.Sqlx.Select(&rows, `SELECT * FROM buckets WHERE id = $1`, id)
+func (db *Db) GetBucket(id uint64) (*types.Bucket, error) {
+	var rows []*dbtypes.BucketRow
+	err := db.Sqlx.Select(&rows, `SELECT * FROM bucket WHERE id = $1`, id)
 	if err != nil {
 		return nil, err
 	}
@@ -149,7 +152,7 @@ func (db *Db) GetBuckets(id uint64) (*types.Buckets, error) {
 
 	row := rows[0]
 
-	bucket := types.NewBuckets(
+	bucket := types.NewBucket(
 		row.BucketId,
 		row.BucketName,
 		row.Owner,
@@ -162,34 +165,35 @@ func (db *Db) GetBuckets(id uint64) (*types.Buckets, error) {
 		row.ChargedReadQuota,
 		row.GlobalVirtualGroupFamilyId,
 		row.SpAsDelegatedAgentDisabled,
+		row.Height,
 	)
 	return &bucket, nil
 }
 
-func (db *Db) SaveObjects(objects []types.Objects) error {
+func (db *Db) SaveObject(height int64, objects []types.Object) error {
 	if len(objects) == 0 {
 		return nil
 	}
 
 	var accounts []types.Account
 
-	objectsQuery := `
-INSERT INTO objects(
+	objectQuery := `
+INSERT INTO object(
 	id, object_name, bucket_name, owner, creator, payload_size, visibility, content_type,object_status,redundancy_type,
-    source_type, checksums, create_at, local_virtual_group_id, tags, is_updating, updated_at, updated_by, version
+    source_type, checksums, create_at, local_virtual_group_id, height, tags, is_updating, updated_at, updated_by, version
 ) VALUES`
-	var objectsParams []interface{}
+	var objectParams []interface{}
 
 	for i, object := range objects {
 		// Prepare the account query
 		accounts = append(accounts, types.NewAccount(object.Owner))
 
 		// Prepare the object query
-		vi := i * 19
-		objectsQuery += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d),",
-			vi+1, vi+2, vi+3, vi+4, vi+5, vi+6, vi+7, vi+8, vi+9, vi+10, vi+11, vi+12, vi+13, vi+14, vi+15, vi+16, vi+17, vi+18, vi+19)
+		vi := i * 20
+		objectQuery += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d),",
+			vi+1, vi+2, vi+3, vi+4, vi+5, vi+6, vi+7, vi+8, vi+9, vi+10, vi+11, vi+12, vi+13, vi+14, vi+15, vi+16, vi+17, vi+18, vi+19, vi+20)
 
-		objectsParams = append(objectsParams,
+		objectParams = append(objectParams,
 			object.ObjectId,
 			object.ObjectName,
 			object.BucketName,
@@ -204,6 +208,7 @@ INSERT INTO objects(
 			object.Checksums,
 			object.CreateAt,
 			object.LocalVirtualGroupId,
+			height,
 			object.Tags,
 			object.IsUpdating,
 			object.UpdatedAt,
@@ -219,9 +224,9 @@ INSERT INTO objects(
 	}
 
 	// Store the objects
-	objectsQuery = objectsQuery[:len(objectsQuery)-1] // Remove trailing ","
-	objectsQuery += " ON CONFLICT DO NOTHING"
-	_, err = db.SQL.Exec(objectsQuery, objectsParams...)
+	objectQuery = objectQuery[:len(objectQuery)-1] // Remove trailing ","
+	objectQuery += " ON CONFLICT DO NOTHING"
+	_, err = db.SQL.Exec(objectQuery, objectParams...)
 	if err != nil {
 		return fmt.Errorf("error while storing objects: %s", err)
 	}
@@ -229,9 +234,9 @@ INSERT INTO objects(
 	return nil
 }
 
-func (db *Db) GetObjects(id uint64) (*types.Objects, error) {
-	var rows []*dbtypes.ObjectsRow
-	err := db.Sqlx.Select(&rows, `SELECT * FROM objects WHERE id = $1`, id)
+func (db *Db) GetObject(id uint64) (*types.Object, error) {
+	var rows []*dbtypes.ObjectRow
+	err := db.Sqlx.Select(&rows, `SELECT * FROM object WHERE id = $1`, id)
 	if err != nil {
 		return nil, err
 	}
@@ -242,7 +247,7 @@ func (db *Db) GetObjects(id uint64) (*types.Objects, error) {
 
 	row := rows[0]
 
-	object := types.NewObjects(
+	object := types.NewObject(
 		row.ObjectId,
 		row.ObjectName,
 		row.BucketName,
@@ -262,6 +267,7 @@ func (db *Db) GetObjects(id uint64) (*types.Objects, error) {
 		row.UpdatedBy,
 		row.Version,
 		row.LocalVirtualGroupId,
+		row.Height,
 	)
 	return &object, nil
 }

@@ -2,42 +2,46 @@ package types
 
 import "time"
 
-type GroupsRow struct {
+type StorageGroupRow struct {
 	GroupId    uint64 `db:"id"`
 	GroupName  string `db:"group_name"`
 	Owner      string `db:"owner"`
 	SourceType string `db:"source_type"`
 	Extra      string `db:"extra"`
+	Height     int64  `db:"height"`
 	Tags       string `db:"tags"`
 }
 
-func NewGroupsRow(
+func NewStorageGroupRow(
 	groupId uint64,
 	groupName string,
 	owner string,
 	sourceType string,
 	extra string,
+	height int64,
 	tags string,
-) GroupsRow {
-	return GroupsRow{
+) StorageGroupRow {
+	return StorageGroupRow{
 		GroupId:    groupId,
 		GroupName:  groupName,
 		Owner:      owner,
 		SourceType: sourceType,
 		Extra:      extra,
+		Height:     height,
 		Tags:       tags,
 	}
 }
-func (g GroupsRow) Equal(v GroupsRow) bool {
+func (g StorageGroupRow) Equal(v StorageGroupRow) bool {
 	return g.GroupId == v.GroupId &&
 		g.GroupName == v.GroupName &&
 		g.Owner == v.Owner &&
 		g.SourceType == v.SourceType &&
 		g.Extra == v.Extra &&
+		g.Height == v.Height &&
 		g.Tags == v.Tags
 }
 
-type BucketsRow struct {
+type BucketRow struct {
 	BucketId                   uint64    `db:"id"`
 	BucketName                 string    `db:"bucket_name"`
 	Owner                      string    `db:"owner"`
@@ -50,9 +54,10 @@ type BucketsRow struct {
 	ChargedReadQuota           uint64    `db:"charged_read_quota"`
 	GlobalVirtualGroupFamilyId uint32    `db:"global_virtual_group_family_id"`
 	SpAsDelegatedAgentDisabled bool      `db:"sp_as_delegated_agent_disabled"`
+	Height                     int64     `db:"height"`
 }
 
-func NewBucketsRow(
+func NewBucketRow(
 	bucketId uint64,
 	bucketName string,
 	owner string,
@@ -65,8 +70,9 @@ func NewBucketsRow(
 	chargedReadQuota uint64,
 	globalVirtualGroupFamilyId uint32,
 	spAsDelegatedAgentDisabled bool,
-) BucketsRow {
-	return BucketsRow{
+	height int64,
+) BucketRow {
+	return BucketRow{
 		BucketId:                   bucketId,
 		BucketName:                 bucketName,
 		Owner:                      owner,
@@ -79,10 +85,11 @@ func NewBucketsRow(
 		ChargedReadQuota:           chargedReadQuota,
 		GlobalVirtualGroupFamilyId: globalVirtualGroupFamilyId,
 		SpAsDelegatedAgentDisabled: spAsDelegatedAgentDisabled,
+		Height:                     height,
 	}
 }
 
-func (b BucketsRow) Equal(v BucketsRow) bool {
+func (b BucketRow) Equal(v BucketRow) bool {
 	return b.BucketId == v.BucketId &&
 		b.BucketName == v.BucketName &&
 		b.Owner == v.Owner &&
@@ -94,11 +101,11 @@ func (b BucketsRow) Equal(v BucketsRow) bool {
 		b.Tags == v.Tags &&
 		b.ChargedReadQuota == v.ChargedReadQuota &&
 		b.GlobalVirtualGroupFamilyId == v.GlobalVirtualGroupFamilyId &&
-		b.SpAsDelegatedAgentDisabled == v.SpAsDelegatedAgentDisabled
-
+		b.SpAsDelegatedAgentDisabled == v.SpAsDelegatedAgentDisabled &&
+		b.Height == v.Height
 }
 
-type ObjectsRow struct {
+type ObjectRow struct {
 	ObjectId            uint64    `db:"id"`
 	ObjectName          string    `db:"object_name"`
 	BucketName          string    `db:"bucket_name"`
@@ -118,6 +125,7 @@ type ObjectsRow struct {
 	UpdatedBy           string    `db:"update_by"`
 	Version             int64     `db:"version"`
 	LocalVirtualGroupId uint32    `db:"local_virtual_group_id"`
+	Height              int64     `db:"height"`
 }
 
 func NewObjectsRow(
@@ -140,8 +148,9 @@ func NewObjectsRow(
 	updatedBy string,
 	version int64,
 	localVirtualGroupId uint32,
-) ObjectsRow {
-	return ObjectsRow{
+	height int64,
+) ObjectRow {
+	return ObjectRow{
 		ObjectId:            objectId,
 		ObjectName:          objectName,
 		BucketName:          bucketName,
@@ -161,10 +170,11 @@ func NewObjectsRow(
 		UpdatedBy:           updatedBy,
 		Version:             version,
 		LocalVirtualGroupId: localVirtualGroupId,
+		Height:              height,
 	}
 }
 
-func (o ObjectsRow) Equal(v ObjectsRow) bool {
+func (o ObjectRow) Equal(v ObjectRow) bool {
 	return o.ObjectId == v.ObjectId &&
 		o.ObjectName == v.ObjectName &&
 		o.BucketName == v.BucketName &&
@@ -183,5 +193,6 @@ func (o ObjectsRow) Equal(v ObjectsRow) bool {
 		o.UpdatedAt.Equal(v.UpdatedAt) &&
 		o.UpdatedBy == v.UpdatedBy &&
 		o.Version == v.Version &&
-		o.LocalVirtualGroupId == v.LocalVirtualGroupId
+		o.LocalVirtualGroupId == v.LocalVirtualGroupId &&
+		o.Height == v.Height
 }

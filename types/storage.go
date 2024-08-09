@@ -2,42 +2,46 @@ package types
 
 import "time"
 
-type Groups struct {
+type StorageGroup struct {
 	GroupId    uint64
 	GroupName  string
 	Owner      string
 	SourceType string
 	Extra      string
+	Height     int64
 	Tags       string
 }
 
-func NewGroups(
+func NewStorageGroup(
 	groupId uint64,
 	groupName string,
 	owner string,
 	sourceType string,
 	extra string,
+	height int64,
 	tags string,
-) Groups {
-	return Groups{
+) StorageGroup {
+	return StorageGroup{
 		GroupId:    groupId,
 		GroupName:  groupName,
 		Owner:      owner,
 		SourceType: sourceType,
 		Extra:      extra,
+		Height:     height,
 		Tags:       tags,
 	}
 }
-func (g Groups) Equal(v Groups) bool {
+func (g StorageGroup) Equal(v StorageGroup) bool {
 	return g.GroupId == v.GroupId &&
 		g.GroupName == v.GroupName &&
 		g.Owner == v.Owner &&
 		g.SourceType == v.SourceType &&
 		g.Extra == v.Extra &&
+		g.Height == v.Height &&
 		g.Tags == v.Tags
 }
 
-type Buckets struct {
+type Bucket struct {
 	BucketId                   uint64
 	BucketName                 string
 	Owner                      string
@@ -50,9 +54,10 @@ type Buckets struct {
 	ChargedReadQuota           uint64
 	GlobalVirtualGroupFamilyId uint32
 	SpAsDelegatedAgentDisabled bool
+	Height                     int64
 }
 
-func NewBuckets(
+func NewBucket(
 	bucketId uint64,
 	bucketName string,
 	owner string,
@@ -65,8 +70,9 @@ func NewBuckets(
 	chargedReadQuota uint64,
 	globalVirtualGroupFamilyId uint32,
 	spAsDelegatedAgentDisabled bool,
-) Buckets {
-	return Buckets{
+	height int64,
+) Bucket {
+	return Bucket{
 		BucketId:                   bucketId,
 		BucketName:                 bucketName,
 		Owner:                      owner,
@@ -79,10 +85,11 @@ func NewBuckets(
 		ChargedReadQuota:           chargedReadQuota,
 		GlobalVirtualGroupFamilyId: globalVirtualGroupFamilyId,
 		SpAsDelegatedAgentDisabled: spAsDelegatedAgentDisabled,
+		Height:                     height,
 	}
 }
 
-func (b Buckets) Equal(v Buckets) bool {
+func (b Bucket) Equal(v Bucket) bool {
 	return b.BucketId == v.BucketId &&
 		b.BucketName == v.BucketName &&
 		b.Owner == v.Owner &&
@@ -94,11 +101,11 @@ func (b Buckets) Equal(v Buckets) bool {
 		b.Tags == v.Tags &&
 		b.ChargedReadQuota == v.ChargedReadQuota &&
 		b.GlobalVirtualGroupFamilyId == v.GlobalVirtualGroupFamilyId &&
-		b.SpAsDelegatedAgentDisabled == v.SpAsDelegatedAgentDisabled
-
+		b.SpAsDelegatedAgentDisabled == v.SpAsDelegatedAgentDisabled &&
+		b.Height == v.Height
 }
 
-type Objects struct {
+type Object struct {
 	ObjectId            uint64
 	ObjectName          string
 	BucketName          string
@@ -118,9 +125,10 @@ type Objects struct {
 	UpdatedBy           string
 	Version             int64
 	LocalVirtualGroupId uint32
+	Height              int64
 }
 
-func NewObjects(
+func NewObject(
 	objectId uint64,
 	objectName string,
 	bucketName string,
@@ -140,8 +148,9 @@ func NewObjects(
 	updatedBy string,
 	version int64,
 	localVirtualGroupId uint32,
-) Objects {
-	return Objects{
+	height int64,
+) Object {
+	return Object{
 		ObjectId:            objectId,
 		ObjectName:          objectName,
 		BucketName:          bucketName,
@@ -161,10 +170,11 @@ func NewObjects(
 		UpdatedBy:           updatedBy,
 		Version:             version,
 		LocalVirtualGroupId: localVirtualGroupId,
+		Height:              height,
 	}
 }
 
-func (o Objects) Equal(v Objects) bool {
+func (o Object) Equal(v Object) bool {
 	return o.ObjectId == v.ObjectId &&
 		o.ObjectName == v.ObjectName &&
 		o.BucketName == v.BucketName &&
@@ -183,5 +193,6 @@ func (o Objects) Equal(v Objects) bool {
 		o.UpdatedAt.Equal(v.UpdatedAt) &&
 		o.UpdatedBy == v.UpdatedBy &&
 		o.Version == v.Version &&
-		o.LocalVirtualGroupId == v.LocalVirtualGroupId
+		o.LocalVirtualGroupId == v.LocalVirtualGroupId &&
+		o.Height == v.Height
 }
