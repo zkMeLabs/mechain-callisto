@@ -3,7 +3,7 @@ const { ApolloClient, InMemoryCache, gql } = require('@apollo/client');
 // define GraphQL query
 const BUCKETS_QUERY = gql`
   query Buckets($limit: Int = 10, $offset: Int = 0) {
-    buckets: buckets(limit: $limit, offset: $offset, order_by: { create_at: desc }) {
+    buckets: bucket(limit: $limit, offset: $offset, order_by: { create_at: desc }) {
       id
       bucket_name
       bucket_status
