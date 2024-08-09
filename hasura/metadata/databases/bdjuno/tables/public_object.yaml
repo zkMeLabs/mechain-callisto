@@ -22,8 +22,8 @@ select_permissions:
         - height
         - tags
         - is_updating
-        - update_at
-        - update_by
+        - updated_at
+        - updated_by
         - version
       filter: {}
       limit: 100
