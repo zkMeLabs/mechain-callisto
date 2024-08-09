@@ -56,17 +56,21 @@ func (m *Module) parseTransactionEvents(b *tmctypes.ResultBlock, txs []*juno.Tx)
 func (m *Module) handleCreateGroup(height int64, values []abcitypes.EventAttribute) {
 	msg := &createGroupEvent{}
 	for _, v := range values {
+		strV := ""
+		if len(v.Value) > 2 {
+			strV = v.Value[1 : len(v.Value)-1]
+		}
 		switch v.Key {
 		case "group_id":
-			msg.GroupId = v.Value[1 : len(v.Value)-1]
+			msg.GroupId = strV
 		case "group_name":
-			msg.GroupName = v.Value
+			msg.GroupName = strV
 		case "owner":
-			msg.Owner = v.Value
+			msg.Owner = strV
 		case "source_type":
-			msg.SourceType = v.Value
+			msg.SourceType = strV
 		case "extra":
-			msg.Extra = v.Value
+			msg.Extra = strV
 		}
 	}
 
@@ -89,13 +93,17 @@ func (m *Module) handleCreateGroup(height int64, values []abcitypes.EventAttribu
 func (m *Module) handleDeleteGroup(height int64, values []abcitypes.EventAttribute) {
 	msg := &deleteGroupEvent{}
 	for _, v := range values {
+		strV := ""
+		if len(v.Value) > 2 {
+			strV = v.Value[1 : len(v.Value)-1]
+		}
 		switch v.Key {
 		case "group_id":
-			msg.GroupId = v.Value
+			msg.GroupId = strV
 		case "group_name":
-			msg.GroupName = v.Value
+			msg.GroupName = strV
 		case "owner":
-			msg.Owner = v.Value
+			msg.Owner = strV
 		}
 	}
 }
@@ -103,45 +111,37 @@ func (m *Module) handleDeleteGroup(height int64, values []abcitypes.EventAttribu
 func (m *Module) handleCreateBucket(height int64, values []abcitypes.EventAttribute) {
 	msg := &createBucketEvent{}
 	for _, v := range values {
+		strV := ""
+		if len(v.Value) > 2 {
+			strV = v.Value[1 : len(v.Value)-1]
+		}
 		switch v.Key {
 		case "bucket_id":
-			msg.BucketId = v.Value[1 : len(v.Value)-1]
+			msg.BucketId = strV
 		case "bucket_name":
-			msg.BucketName = v.Value
+			msg.BucketName = strV
 		case "owner":
-			msg.Owner = v.Value
+			msg.Owner = strV
 		case "visibility":
-			msg.Visibility = v.Value
+			msg.Visibility = strV
 		case "create_at":
-			createAt, err := strconv.ParseInt(v.Value, 10, 64)
-			if err != nil {
-				createAt, _ = strconv.ParseInt(v.Value[1:len(v.Value)-1], 10, 64)
-			}
+			createAt, _ := strconv.ParseInt(strV, 10, 64)
 			msg.CreateAt = createAt
 		case "source_type":
-			msg.SourceType = v.Value
+			msg.SourceType = strV
 		case "charged_read_quota":
-			chargedReadQuota, err := strconv.ParseUint(v.Value, 10, 64)
-			if err != nil {
-				chargedReadQuota, _ = strconv.ParseUint(v.Value[1:len(v.Value)-1], 10, 64)
-			}
+			chargedReadQuota, _ := strconv.ParseUint(strV, 10, 64)
 			msg.ChargedReadQuota = chargedReadQuota
 		case "payment_address":
-			msg.PaymentAddress = v.Value
+			msg.PaymentAddress = strV
 		case "primary_sp_id":
-			primarySpId, err := strconv.ParseUint(v.Value, 10, 32)
-			if err != nil {
-				primarySpId, _ = strconv.ParseUint(v.Value[1:len(v.Value)-1], 10, 32)
-			}
+			primarySpId, _ := strconv.ParseUint(strV, 10, 32)
 			msg.PrimarySpId = uint32(primarySpId)
 		case "global_virtual_group_family_id":
-			globalVirtualGroupFamilyId, err := strconv.ParseUint(v.Value, 10, 32)
-			if err != nil {
-				globalVirtualGroupFamilyId, _ = strconv.ParseUint(v.Value[1:len(v.Value)-1], 10, 32)
-			}
+			globalVirtualGroupFamilyId, _ := strconv.ParseUint(strV, 10, 32)
 			msg.GlobalVirtualGroupFamilyId = uint32(globalVirtualGroupFamilyId)
 		case "status":
-			msg.Status = v.Value
+			msg.Status = strV
 		}
 	}
 	bucketId, _ := strconv.ParseUint(msg.BucketId, 10, 64)
@@ -169,20 +169,21 @@ func (m *Module) handleCreateBucket(height int64, values []abcitypes.EventAttrib
 func (m *Module) handleDeleteBucket(height int64, values []abcitypes.EventAttribute) {
 	msg := &deleteBucketEvent{}
 	for _, v := range values {
+		strV := ""
+		if len(v.Value) > 2 {
+			strV = v.Value[1 : len(v.Value)-1]
+		}
 		switch v.Key {
 		case "bucket_id":
-			msg.BucketId = v.Value
+			msg.BucketId = strV
 		case "bucket_name":
-			msg.BucketName = v.Value
+			msg.BucketName = strV
 		case "owner":
-			msg.Owner = v.Value
+			msg.Owner = strV
 		case "operator":
-			msg.Operator = v.Value
+			msg.Operator = strV
 		case "global_virtual_group_family_id":
-			globalVirtualGroupFamilyId, err := strconv.ParseUint(v.Value, 10, 32)
-			if err != nil {
-				globalVirtualGroupFamilyId, _ = strconv.ParseUint(v.Value[1:len(v.Value)-1], 10, 32)
-			}
+			globalVirtualGroupFamilyId, _ := strconv.ParseUint(strV, 10, 32)
 			msg.GlobalVirtualGroupFamilyId = uint32(globalVirtualGroupFamilyId)
 		}
 	}
@@ -191,54 +192,46 @@ func (m *Module) handleDeleteBucket(height int64, values []abcitypes.EventAttrib
 func (m *Module) handleCreateObject(height int64, values []abcitypes.EventAttribute) {
 	msg := &createObjectEvent{}
 	for _, v := range values {
+		strV := ""
+		if len(v.Value) > 2 {
+			strV = v.Value[1 : len(v.Value)-1]
+		}
 		switch v.Key {
 		case "object_id":
-			msg.ObjectId = v.Value[1 : len(v.Value)-1]
+			msg.ObjectId = strV
 		case "object_name":
-			msg.ObjectName = v.Value
+			msg.ObjectName = strV
 		case "bucket_id":
-			msg.BucketId = v.Value
+			msg.BucketId = strV
 		case "bucket_name":
-			msg.BucketName = v.Value
+			msg.BucketName = strV
 		case "owner":
-			msg.Owner = v.Value
+			msg.Owner = strV
 		case "creator":
-			msg.Creator = v.Value
+			msg.Creator = strV
 		case "primary_sp_id":
-			primarySpId, err := strconv.ParseUint(v.Value, 10, 32)
-			if err != nil {
-				primarySpId, _ = strconv.ParseUint(v.Value[1:len(v.Value)-1], 10, 32)
-			}
+			primarySpId, _ := strconv.ParseUint(strV, 10, 32)
 			msg.PrimarySpId = uint32(primarySpId)
 		case "payload_size":
-			payloadSize, err := strconv.ParseUint(v.Value, 10, 64)
-			if err != nil {
-				payloadSize, _ = strconv.ParseUint(v.Value[1:len(v.Value)-1], 10, 64)
-			}
+			payloadSize, _ := strconv.ParseUint(strV, 10, 64)
 			msg.PayloadSize = payloadSize
 		case "visibility":
-			msg.Visibility = v.Value
+			msg.Visibility = strV
 		case "content_type":
-			msg.ContentType = v.Value
+			msg.ContentType = strV
 		case "create_at":
-			createAt, err := strconv.ParseInt(v.Value, 10, 64)
-			if err != nil {
-				createAt, _ = strconv.ParseInt(v.Value[1:len(v.Value)-1], 10, 64)
-			}
+			createAt, _ := strconv.ParseInt(strV, 10, 64)
 			msg.CreateAt = createAt
 		case "status":
-			msg.Status = v.Value
+			msg.Status = strV
 		case "redundancy_type":
-			msg.RedundancyType = v.Value
+			msg.RedundancyType = strV
 		case "source_type":
-			msg.SourceType = v.Value
+			msg.SourceType = strV
 		case "checksum":
-			msg.Checksum = v.Value
+			msg.Checksum = strV
 		case "local_virtual_group_id":
-			localVirtualGroupId, err := strconv.ParseUint(v.Value, 10, 32)
-			if err != nil {
-				localVirtualGroupId, _ = strconv.ParseUint(v.Value[1:len(v.Value)-1], 10, 32)
-			}
+			localVirtualGroupId, _ := strconv.ParseUint(strV, 10, 32)
 			msg.LocalVirtualGroupId = uint32(localVirtualGroupId)
 		}
 	}
@@ -272,17 +265,21 @@ func (m *Module) handleCreateObject(height int64, values []abcitypes.EventAttrib
 func (m *Module) handleDeleteObject(height int64, values []abcitypes.EventAttribute) {
 	msg := &deleteObjectEvent{}
 	for _, v := range values {
+		strV := ""
+		if len(v.Value) > 2 {
+			strV = v.Value[1 : len(v.Value)-1]
+		}
 		switch v.Key {
 		case "object_id":
-			msg.ObjectId = v.Value
+			msg.ObjectId = strV
 		case "object_name":
-			msg.ObjectName = v.Value
+			msg.ObjectName = strV
 		case "bucket_name":
-			msg.BucketName = v.Value
+			msg.BucketName = strV
 		case "operator":
-			msg.Operator = v.Value
+			msg.Operator = strV
 		case "primary_sp_id":
-			primarySpId, _ := strconv.ParseUint(v.Value, 10, 32)
+			primarySpId, _ := strconv.ParseUint(strV, 10, 32)
 			msg.PrimarySpId = uint32(primarySpId)
 		}
 	}
