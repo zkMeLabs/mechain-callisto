@@ -44,12 +44,12 @@ reset)
     make build
 
     cd "${project_path}"/deploy || exit
-    docker compose -f docker-compose.yaml down
+    docker compose -f docker-compose.devnet.yaml down
     rm -rf ./data
-    docker compose -f docker-compose.yaml up -d
+    docker compose -f docker-compose.devnet.yaml up -d
 
     echo "wait 45s for graphql engine start..."
-    for ((i = 90; i > 0; i -= 3)); do
+    for ((i = 20; i > 0; i -= 3)); do
         echo "please wait ${i}s..."
         sleep 3
     done
@@ -60,12 +60,11 @@ reset)
 
     echo "Initializing the configuration..."
     cd "$project_path"/deploy || exit
-    cp config.yaml ./data/config.yaml
+    cp config.devnet.yaml ./data/config.yaml
     ${bin} parse genesis-file --genesis-file-path ./genesis.json --home ./data
 
     echo "run BDjuno...."
-    #nohup ${bin} start --home ./data >./bdjuno.log 2>&1 &
-    ${bin} start --home ./data
+    nohup "${bin}" start --home ./data >./data/bdjuno.log 2>&1 &
 
     echo "===== end ===="
     ;;
