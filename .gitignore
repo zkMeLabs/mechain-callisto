@@ -16,3 +16,4 @@ deploy/data/*
 !deploy/package.json
 !deploy/client.js
 deploy/node_modules/
+.DS_Store
