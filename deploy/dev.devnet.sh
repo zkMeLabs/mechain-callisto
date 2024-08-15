@@ -56,7 +56,7 @@ reset)
 
     echo "Importing the Hasura metadata..."
     cd "$project_path"/hasura || exit
-    hasura metadata apply --endpoint http://localhost:9090 --admin-secret 123456
+    hasura metadata apply --endpoint http://localhost:9090 --admin-secret mechain
 
     echo "Initializing the configuration..."
     cd "$project_path"/deploy || exit

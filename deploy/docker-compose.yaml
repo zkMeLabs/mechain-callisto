@@ -10,7 +10,7 @@ services:
     environment:
       POSTGRES_DB: bdjuno
       POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "postgrespassword"
+      POSTGRES_PASSWORD: "postgres_mechain"
       POSTGRES_HOST_AUTH_METHOD: "trust"
   graphql-engine:
     image: hasura/graphql-engine:v2.22.1
@@ -23,9 +23,9 @@ services:
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: "anonymous"
       ACTION_BASE_URL: "http://192.168.211.219:3000" ## 这里由于在容器里面启动得，所以要将localhost改为局域网地址
       ## postgres database to store Hasura metadata
-      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/bdjuno
+      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgres_mechain@postgres:5432/bdjuno
       ## this env var can be used to add the above postgres database to Hasura as a data source. this can be removed/updated based on your needs
-      PG_DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/bdjuno
+      PG_DATABASE_URL: postgres://postgres:postgres_mechain@postgres:5432/bdjuno
       ## enable the console served by server
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
       ## enable debugging mode. It is recommended to disable this in production
@@ -34,6 +34,6 @@ services:
       ## uncomment next line to run console offline (i.e load console assets from server instead of CDN)
       # HASURA_GRAPHQL_CONSOLE_ASSETS_DIR: /srv/console-assets
       ## uncomment next line to set an admin secret
-      HASURA_GRAPHQL_ADMIN_SECRET: 123456
+      HASURA_GRAPHQL_ADMIN_SECRET: mechain
 volumes:
   db_data:

@@ -55,7 +55,7 @@ reset)
     done
 
     cd "$project_path"/hasura || exit
-    hasura metadata apply --endpoint http://localhost:8080 --admin-secret 123456
+    hasura metadata apply --endpoint http://localhost:8080 --admin-secret mechain
 
     cd "$project_path"/deploy || exit
     cp config.yaml ./data
