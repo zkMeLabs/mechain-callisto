@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	inflationtypes "github.com/evmos/evmos/v14/x/inflation/types"
+	inflationtypes "github.com/evmos/evmos/v12/x/inflation/types"
 
 	"github.com/forbole/juno/v5/node/remote"
 
@@ -22,7 +22,7 @@ import (
 
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
-	evmosapp "github.com/evmos/evmos/v14/app"
+	evmosapp "github.com/evmos/evmos/v12/app"
 	banksource "github.com/forbole/bdjuno/v4/modules/bank/source"
 	localbanksource "github.com/forbole/bdjuno/v4/modules/bank/source/local"
 	remotebanksource "github.com/forbole/bdjuno/v4/modules/bank/source/remote"

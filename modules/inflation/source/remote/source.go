@@ -2,15 +2,13 @@ package remote
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	inflationtypes "github.com/evmos/evmos/v14/x/inflation/types"
+	inflationtypes "github.com/evmos/evmos/v12/x/inflation/types"
 	"github.com/forbole/juno/v5/node/remote"
 
 	inflationsource "github.com/forbole/bdjuno/v4/modules/inflation/source"
 )
 
-var (
-	_ inflationsource.Source = &Source{}
-)
+var _ inflationsource.Source = &Source{}
 
 // Source implements inflationsource.Source using a remote node
 type Source struct {

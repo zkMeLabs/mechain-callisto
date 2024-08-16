@@ -22,7 +22,7 @@ import (
 
 	gov "github.com/cosmos/cosmos-sdk/x/gov/types"
 
-	inflationtypes "github.com/evmos/evmos/v14/x/inflation/types"
+	inflationtypes "github.com/evmos/evmos/v12/x/inflation/types"
 )
 
 func (m *Module) UpdateProposal(height int64, blockTime time.Time, id uint64) error {
@@ -231,7 +231,7 @@ func (m *Module) updateProposalValidatorStatusesSnapshot(
 		return fmt.Errorf("error while getting validator statuses: %s", err)
 	}
 
-	var snapshots = make([]types.ProposalValidatorStatusSnapshot, len(validators))
+	snapshots := make([]types.ProposalValidatorStatusSnapshot, len(validators))
 	for index, validator := range validators {
 		consAddr, err := validator.GetConsAddr()
 		if err != nil {
