@@ -35,6 +35,7 @@ func (m *Module) HandleBlock(
 
 	return nil
 }
+
 func (m *Module) parseTransactionEvents(b *tmctypes.ResultBlock, txs []*juno.Tx) {
 	log.Debug().Str("module", "distribution").Int64("height", b.Block.Height)
 	for _, tx := range txs {
