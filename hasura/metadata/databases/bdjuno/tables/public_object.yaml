@@ -5,26 +5,40 @@ select_permissions:
   - permission:
       allow_aggregations: false
       columns:
-        - id
-        - object_name
+        - bucket_id
         - bucket_name
-        - owner
+        - object_id
+        - object_name
         - creator
+        - owner
+        - local_virtual_group_id
+        - operator
         - payload_size
         - visibility
         - content_type
-        - object_status
+        - status
         - redundancy_type
         - source_type
         - checksums
+        - delete_at
+        - delete_reason
         - create_at
-        - local_virtual_group_id
-        - height
+        - create_tx_hash
+        - create_time
+        - update_at
+        - update_tx_hash
+        - sealed_tx_hash
+        - update_time
+        - removed
         - tags
         - is_updating
-        - updated_at
-        - updated_by
+        - content_updated_time
+        - updater
         - version
       filter: {}
       limit: 100
     role: anonymous
+object_relationships:
+  - name: bucket
+    using:
+      foreign_key_constraint_on: bucket_id

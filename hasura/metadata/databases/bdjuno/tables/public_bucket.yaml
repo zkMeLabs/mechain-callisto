@@ -5,19 +5,37 @@ select_permissions:
   - permission:
       allow_aggregations: false
       columns:
-        - id
+        - bucket_id
         - bucket_name
         - owner
-        - visibility
-        - source_type
-        - create_at
         - payment_address
-        - bucket_status
-        - charged_read_quota
         - global_virtual_group_family_id
-        - height
-        - sp_as_delegated_agent_disabled
+        - operator
+        - source_type
+        - charged_read_quota
+        - visibility
+        - status
+        - delete_at
+        - delete_reason
+        - storage_size
+        - charge_size
+        - create_at
+        - create_tx_hash
+        - create_time
+        - update_at
+        - update_tx_hash
+        - update_time
+        - removed
+        - off_chain_status
         - tags
       filter: {}
       limit: 100
     role: anonymous
+array_relationships:
+  - name: objects
+    using:
+      foreign_key_constraint_on:
+        column: bucket_id
+        table:
+          name: object
+          schema: public
