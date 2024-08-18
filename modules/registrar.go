@@ -47,9 +47,7 @@ func UniqueAddressesParser(parser messages.MessageAddressesParser) messages.Mess
 
 // --------------------------------------------------------------------------------------------------------------------
 
-var (
-	_ registrar.Registrar = &Registrar{}
-)
+var _ registrar.Registrar = &Registrar{}
 
 // Registrar represents the modules.Registrar that allows to register all modules that are supported by BigDipper
 type Registrar struct {
@@ -86,7 +84,7 @@ func (r *Registrar) BuildModules(ctx registrar.Context) jmodules.Modules {
 	stakingModule := staking.NewModule(sources.StakingSource, cdc, db)
 	govModule := gov.NewModule(sources.GovSource, authModule, distrModule, inflationModule, mintModule, slashingModule, stakingModule, cdc, db)
 	upgradeModule := upgrade.NewModule(db, stakingModule)
-	storageModule := storage.NewModule(cdc, db)
+	storageModule := storage.NewModule(sources.StorageSource, cdc, db)
 
 	return []jmodules.Module{
 		messages.NewModule(r.parser, cdc, ctx.Database),

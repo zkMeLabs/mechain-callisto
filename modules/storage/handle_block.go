@@ -24,13 +24,18 @@ const (
 func (m *Module) HandleBlock(
 	b *tmctypes.ResultBlock, results *tmctypes.ResultBlockResults, txs []*juno.Tx, vals *tmctypes.ResultValidators,
 ) error {
-
+	info, extra, err := m.source.HeadBucket(190, "mechain")
+	if err != nil {
+		_ = info
+		_ = extra
+	}
 	if len(txs) > 0 {
 		m.parseTransactionEvents(b, txs)
 	}
 
 	return nil
 }
+
 func (m *Module) parseTransactionEvents(b *tmctypes.ResultBlock, txs []*juno.Tx) {
 	log.Debug().Str("module", "distribution").Int64("height", b.Block.Height)
 	for _, tx := range txs {
