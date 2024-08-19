@@ -1,7 +1,7 @@
 -- bucket tables
 CREATE TABLE bucket (
     id BIGINT PRIMARY KEY,
-    bucket_id BYTEA NOT NULL UNIQUE,
+    bucket_id TEXT NOT NULL UNIQUE,
     bucket_name TEXT NOT NULL UNIQUE CHECK (
         LENGTH(bucket_name) BETWEEN 3 AND 63
     ),
@@ -34,9 +34,9 @@ CREATE INDEX idx_bucket_gvgf_id ON bucket(global_virtual_group_family_id);
 -- object tables
 CREATE TABLE object (
     id BIGINT PRIMARY KEY,
-    bucket_id BYTEA NOT NULL,
+    bucket_id TEXT NOT NULL,
     bucket_name TEXT NOT NULL,
-    object_id BYTEA NOT NULL UNIQUE,
+    object_id TEXT NOT NULL UNIQUE,
     object_name TEXT,
     creator TEXT,
     owner TEXT NOT NULL,
@@ -73,7 +73,7 @@ CREATE INDEX idx_object_local_virtual_group_id ON object(local_virtual_group_id)
 -- group tables
 CREATE TABLE storage_group (
     id BIGINT PRIMARY KEY,
-    owner BYTEA NOT NULL,
+    owner TEXT NOT NULL,
     group_id TEXT NOT NULL,
     group_name TEXT,
     source_type TEXT,
@@ -96,6 +96,6 @@ CREATE TABLE storage_group_member (
     id NUMERIC PRIMARY KEY,
     group_id TEXT NOT NULL,
     member TEXT NOT NULL,
-    expiration_time BIGINT,
+    expiration_time TIMESTAMPTZ,
     CONSTRAINT fk_group FOREIGN KEY (group_id) REFERENCES storage_group(group_id)
 );
