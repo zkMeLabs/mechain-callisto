@@ -22,15 +22,10 @@ select_permissions:
       filter: {}
       limit: 100
     role: anonymous
-array_relationships:
-  - name: objects
-    using:
-      foreign_key_constraint_on:
-        column: family_id
-        table:
-          name: bucket
-          schema: public
 object_relationships:
   - name: storage_provider
     using:
       foreign_key_constraint_on: sp_id
+  - name: global_virtual_group_family
+    using:
+      foreign_key_constraint_on: family_id

@@ -40,6 +40,6 @@ array_relationships:
           name: object
           schema: public
 object_relationships:
-  - name: global_virtual_group
+  - name: global_virtual_group_family
     using:
-      foreign_key_constraint_on: family_id
+      foreign_key_constraint_on: global_virtual_group_family_id
