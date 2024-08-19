@@ -39,3 +39,7 @@ array_relationships:
         table:
           name: object
           schema: public
+object_relationships:
+  - name: global_virtual_group
+    using:
+      foreign_key_constraint_on: family_id

@@ -1,3 +1,55 @@
+-- storage provider tables
+CREATE TABLE storage_provider (
+    id BIGINT PRIMARY KEY,
+    sp_id INT NOT NULL,
+    operator_address TEXT NOT NULL,
+    funding_address TEXT NOT NULL,
+    seal_address TEXT NOT NULL,
+    approval_address TEXT NOT NULL,
+    gc_address TEXT NOT NULL,
+    total_deposit NUMERIC,
+    status TEXT,
+    endpoint TEXT,
+    moniker TEXT,
+    identity TEXT,
+    website TEXT,
+    security_contact TEXT,
+    details TEXT,
+    bls_key TEXT,
+    update_time_sec BIGINT,
+    read_price NUMERIC,
+    free_read_quota BIGINT,
+    store_price NUMERIC,
+    create_at BIGINT,
+    create_tx_hash TEXT NOT NULL,
+    update_at BIGINT,
+    update_tx_hash TEXT NOT NULL,
+    removed BOOLEAN DEFAULT FALSE,
+    UNIQUE (sp_id)
+);
+CREATE INDEX idx_sp_id ON storage_provider (sp_id);
+CREATE INDEX idx_operator_address ON storage_provider (operator_address);
+-- global_virtual_group  table
+CREATE TABLE global_virtual_group (
+    id BIGINT PRIMARY KEY,
+    global_virtual_group_id INT NOT NULL,
+    family_id INT NOT NULL,
+    primary_sp_id INT NOT NULL,
+    secondary_sp_ids TEXT,
+    stored_size BIGINT NOT NULL,
+    virtual_payment_address TEXT,
+    total_deposit NUMERIC,
+    create_at BIGINT NOT NULL,
+    create_tx_hash TEXT NOT NULL,
+    create_time TIMESTAMPTZ NOT NULL,
+    update_at BIGINT NOT NULL,
+    update_tx_hash TEXT NOT NULL,
+    update_time TIMESTAMPTZ NOT NULL,
+    removed BOOLEAN DEFAULT FALSE,
+    UNIQUE (global_virtual_group_id),
+    CONSTRAINT fk_spid FOREIGN KEY (primary_sp_id) REFERENCES storage_provider(sp_id)
+);
+CREATE INDEX idx_primary_sp_id ON global_virtual_group (primary_sp_id);
 -- bucket tables
 CREATE TABLE bucket (
     id BIGINT PRIMARY KEY,
@@ -92,6 +144,7 @@ CREATE TABLE storage_group (
 CREATE INDEX idx_group_owner ON "storage_group"(owner);
 CREATE INDEX idx_group_group_id ON "storage_group"(group_id);
 CREATE INDEX idx_group_group_name ON "storage_group"(group_name);
+-- storage_group_member table
 CREATE TABLE storage_group_member (
     id NUMERIC PRIMARY KEY,
     group_id TEXT NOT NULL,
@@ -99,3 +152,23 @@ CREATE TABLE storage_group_member (
     expiration_time TIMESTAMPTZ,
     CONSTRAINT fk_group FOREIGN KEY (group_id) REFERENCES storage_group(group_id)
 );
+-- permission table
+CREATE TABLE permission (
+    id BIGINT PRIMARY KEY,
+    principal_type INT NOT NULL,
+    principal_value TEXT NOT NULL,
+    resource_type TEXT NOT NULL,
+    resource_id TEXT NOT NULL,
+    policy_id TEXT NOT NULL,
+    create_time TIMESTAMPTZ NOT NULL,
+    update_time TIMESTAMPTZ NOT NULL,
+    expiration_time TIMESTAMPTZ NOT NULL,
+    removed BOOLEAN NOT NULL,
+    UNIQUE (
+        principal_type,
+        principal_value,
+        resource_type,
+        resource_id
+    )
+);
+CREATE INDEX idx_policy_id ON permission (policy_id);
