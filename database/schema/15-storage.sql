@@ -81,7 +81,7 @@ CREATE TABLE storage_group (
     extra TEXT,
     account_id TEXT NOT NULL,
     operator_address TEXT,
-    expiration_time BIGINT,
+    expiration_time TIMESTAMPTZ,
     create_at BIGINT,
     create_time TIMESTAMPTZ,
     update_at BIGINT,
