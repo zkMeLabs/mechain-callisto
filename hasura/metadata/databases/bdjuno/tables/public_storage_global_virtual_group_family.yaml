@@ -29,13 +29,6 @@ array_relationships:
         table:
           name: global_virtual_group
           schema: public
-  - name: bucket
-    using:
-      foreign_key_constraint_on:
-        column: family_id
-        table:
-          name: bucket
-          schema: public
 
 object_relationships:
   - name: primary_sp

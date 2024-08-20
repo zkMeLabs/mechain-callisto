@@ -33,19 +33,3 @@ select_permissions:
       filter: {}
       limit: 100
     role: anonymous
-
-array_relationships:
-  - name: gvg
-    using:
-      foreign_key_constraint_on:
-        column: sp_id
-        table:
-          name: global_virtual_group
-          schema: public
-  - name: gvgf
-    using:
-      foreign_key_constraint_on:
-        column: sp_id
-        table:
-          name: global_virtual_group_family
-          schema: public

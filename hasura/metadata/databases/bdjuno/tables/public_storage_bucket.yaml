@@ -7,10 +7,10 @@ select_permissions:
       columns:
         - bucket_id
         - bucket_name
-        - owner
+        - owner_address
         - payment_address
         - global_virtual_group_family_id
-        - operator
+        - operator_address
         - source_type
         - charged_read_quota
         - visibility

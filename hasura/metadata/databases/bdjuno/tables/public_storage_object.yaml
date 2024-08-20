@@ -9,10 +9,10 @@ select_permissions:
         - bucket_name
         - object_id
         - object_name
-        - creator
-        - owner
+        - creator_address
+        - owner_address
         - local_virtual_group_id
-        - operator
+        - operator_address
         - payload_size
         - visibility
         - content_type

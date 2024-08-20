@@ -50,4 +50,4 @@
 - "!include public_storage_object.yaml"
 - "!include public_storage_group.yaml"
 - "!include public_storage_group_member.yaml"
-- "!include public_permission.yaml"
+- "!include public_storage_permission.yaml"

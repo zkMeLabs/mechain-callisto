@@ -5,13 +5,13 @@ select_permissions:
   - permission:
       allow_aggregations: false
       columns:
-        - owner
+        - owner_address
         - group_id
         - group_name
         - source_type
         - extra
         - account_id
-        - operator
+        - operator_address
         - expiration_time
         - create_at
         - create_time
