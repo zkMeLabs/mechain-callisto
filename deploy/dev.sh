@@ -53,6 +53,7 @@ reset)
     cd "$project_path"/hasura || exit
     hasura metadata apply --endpoint http://localhost:8080 --admin-secret mechain
 
+    # echo "rebuild bdjuno..."
     # killall bdjuno
 
     # cd "${project_path}" || exit

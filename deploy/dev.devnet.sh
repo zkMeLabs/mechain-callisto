@@ -37,12 +37,7 @@ stop)
     ;;
 reset)
     echo "===== reset ===="
-
-    killall bdjuno
-
-    cd "${project_path}" || exit
-    make build
-
+    echo "Start the postgres and graphql-engine..."
     cd "${project_path}"/deploy || exit
     docker compose -f docker-compose.devnet.yaml down
     rm -rf ./data
@@ -58,13 +53,17 @@ reset)
     cd "$project_path"/hasura || exit
     hasura metadata apply --endpoint http://localhost:9090 --admin-secret mechain
 
-    echo "Initializing the configuration..."
-    cd "$project_path"/deploy || exit
-    cp config.devnet.yaml ./data/config.yaml
-    ${bin} parse genesis-file --genesis-file-path ./genesis.json --home ./data
+    # echo "rebuild bdjuno..."
+    # killall bdjuno
+    # cd "${project_path}" || exit
+    # make build
+    # echo "Initializing the configuration..."
+    # cd "$project_path"/deploy || exit
+    # cp config.devnet.yaml ./data/config.yaml
+    # ${bin} parse genesis-file --genesis-file-path ./genesis.json --home ./data
 
-    echo "run BDjuno...."
-    nohup "${bin}" start --home ./data >./data/bdjuno.log 2>&1 &
+    # echo "run BDjuno...."
+    # nohup "${bin}" start --home ./data >./data/bdjuno.log 2>&1 &
 
     echo "===== end ===="
     ;;
