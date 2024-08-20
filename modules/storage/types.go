@@ -20,6 +20,8 @@ type createBucketEvent struct {
 	Owner                      string `json:"owner"`
 	Visibility                 string `json:"visibility"`
 	CreateAt                   int64  `json:"create_at"`
+	CreateTime                 int64  `json:"create_time"`
+	CreateTxHash               string `json:"create_tx_hash"`
 	SourceType                 string `json:"source_type"`
 	ChargedReadQuota           uint64 `json:"charged_read_quota"`
 	PaymentAddress             string `json:"payment_address"`

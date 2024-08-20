@@ -1,10 +1,14 @@
 package database
 
 import (
+	"context"
 	"fmt"
 
+	"github.com/forbole/bdjuno/v4/database/models"
 	dbtypes "github.com/forbole/bdjuno/v4/database/types"
 	"github.com/forbole/bdjuno/v4/types"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func (db *Db) SaveStorageGroup(height int64, groups []types.StorageGroup) error {
@@ -82,61 +86,13 @@ func (db *Db) GetGroup(id uint64) (*types.StorageGroup, error) {
 	return &group, nil
 }
 
-func (db *Db) SaveBucket(height int64, buckets []types.Bucket) error {
-	if len(buckets) == 0 {
-		return nil
-	}
+func (db *Db) SaveBucket(ctx context.Context, bucket *models.Bucket) (string, []interface{}) {
+	stat := db.Db.Session(&gorm.Session{DryRun: true}).Table((&models.Bucket{}).TableName()).Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "bucket_id"}},
+		UpdateAll: true,
+	}).Create(bucket).Statement
 
-	var accounts []types.Account
-
-	bucketQuery := `
-INSERT INTO bucket(
-	id, bucket_name, owner, visibility, source_type, create_at, payment_address, bucket_status, 
-    charged_read_quota, global_virtual_group_family_id, height, sp_as_delegated_agent_disabled, tags
-) VALUES`
-	var bucketParams []interface{}
-
-	for i, bucket := range buckets {
-		// Prepare the account query
-		accounts = append(accounts, types.NewAccount(bucket.Owner))
-
-		// Prepare the bucket query
-		vi := i * 13
-		bucketQuery += fmt.Sprintf("($%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d,$%d),",
-			vi+1, vi+2, vi+3, vi+4, vi+5, vi+6, vi+7, vi+8, vi+9, vi+10, vi+11, vi+12, vi+13)
-
-		bucketParams = append(bucketParams,
-			bucket.BucketId,
-			bucket.BucketName,
-			bucket.Owner,
-			bucket.Visibility,
-			bucket.SourceType,
-			bucket.CreateAt,
-			bucket.PaymentAddress,
-			bucket.BucketStatus,
-			bucket.ChargedReadQuota,
-			bucket.GlobalVirtualGroupFamilyId,
-			height,
-			bucket.SpAsDelegatedAgentDisabled,
-			bucket.Tags,
-		)
-	}
-
-	// Store the accounts
-	err := db.SaveAccounts(accounts)
-	if err != nil {
-		return fmt.Errorf("error while storing owner accounts: %s", err)
-	}
-
-	// Store the buckets
-	bucketQuery = bucketQuery[:len(bucketQuery)-1] // Remove trailing ","
-	bucketQuery += " ON CONFLICT DO NOTHING"
-	_, err = db.SQL.Exec(bucketQuery, bucketParams...)
-	if err != nil {
-		return fmt.Errorf("error while storing buckets: %s", err)
-	}
-
-	return nil
+	return stat.SQL.String(), stat.Vars
 }
 
 func (db *Db) GetBucket(id uint64) (*types.Bucket, error) {

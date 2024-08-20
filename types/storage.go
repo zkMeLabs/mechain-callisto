@@ -31,6 +31,7 @@ func NewStorageGroup(
 		Tags:       tags,
 	}
 }
+
 func (g StorageGroup) Equal(v StorageGroup) bool {
 	return g.GroupId == v.GroupId &&
 		g.GroupName == v.GroupName &&
@@ -47,7 +48,8 @@ type Bucket struct {
 	Owner                      string
 	Visibility                 string
 	SourceType                 string
-	CreateAt                   time.Time
+	CreateAt                   uint64
+	CreateTime                 time.Time
 	PaymentAddress             string
 	BucketStatus               string
 	Tags                       string

@@ -1,14 +1,19 @@
 package storage
 
 import (
+	"context"
 	"strconv"
 	"time"
 
 	abcitypes "github.com/cometbft/cometbft/abci/types"
 	tmctypes "github.com/cometbft/cometbft/rpc/core/types"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/forbole/bdjuno/v4/database/models"
 	"github.com/forbole/bdjuno/v4/types"
-	juno "github.com/forbole/juno/v5/types"
+	junotypes "github.com/forbole/juno/v5/types"
 	"github.com/rs/zerolog/log"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 const (
@@ -23,22 +28,32 @@ const (
 
 // HandleBlock implements modules.BlockModule
 func (m *Module) HandleBlock(
-	b *tmctypes.ResultBlock, results *tmctypes.ResultBlockResults, txs []*juno.Tx, vals *tmctypes.ResultValidators,
+	b *tmctypes.ResultBlock, results *tmctypes.ResultBlockResults, txs []*junotypes.Tx, vals *tmctypes.ResultValidators,
 ) error {
+	dsn := "host=localhost user=postgres password=yourpassword dbname=yourdb port=5432 sslmode=disable"
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatal("Failed to connect to database:", err)
+	}
+	// 迁移 schema (自动创建表)
+	db.AutoMigrate(&models.Bucket{})
 	info, extra, err := m.source.HeadBucket(190, "mechain")
 	if err != nil {
 		_ = info
 		_ = extra
 	}
 	if len(txs) > 0 {
-		m.parseTransactionEvents(b, txs)
+		sqls, err := m.parseTransactionEvents(context.Background(), b, txs)
+		if err != nil {
+			return err
+		}
+
 	}
 
 	return nil
 }
 
-func (m *Module) parseTransactionEvents(b *tmctypes.ResultBlock, txs []*juno.Tx) {
-	log.Debug().Str("module", "storage").Int64("height", b.Block.Height)
+func (m *Module) parseTransactionEvents(ctx context.Context, b *tmctypes.ResultBlock, txs []*junotypes.Tx) (map[string][]interface{}, error) {
 	for _, tx := range txs {
 		for _, event := range tx.Events {
 			switch event.Type {
@@ -49,23 +64,23 @@ func (m *Module) parseTransactionEvents(b *tmctypes.ResultBlock, txs []*juno.Tx)
 					}
 				}
 			case EventTypeCreateGroup:
-				m.handleCreateGroup(b.Block.Height, event.Attributes)
+				return m.handleCreateGroup(b.Block.Height, event.Attributes), nil
 			case EventTypeDeleteGroup:
-				m.handleDeleteGroup(b.Block.Height, event.Attributes)
+				return m.handleDeleteGroup(b.Block.Height, event.Attributes), nil
 			case EventTypeCreateBucket:
-				m.handleCreateBucket(b.Block.Height, event.Attributes)
+				return m.handleCreateBucket(ctx, tx, event.Attributes), nil
 			case EventTypeDeleteBucket:
-				m.handleDeleteBucket(b.Block.Height, event.Attributes)
+				return m.handleDeleteBucket(b.Block.Height, event.Attributes), nil
 			case EventTypeCreateObject:
-				m.handleCreateObject(b.Block.Height, event.Attributes)
+				return m.handleCreateObject(b.Block.Height, event.Attributes), nil
 			case EventTypeDeleteObject:
-				m.handleDeleteObject(b.Block.Height, event.Attributes)
+				return m.handleDeleteObject(b.Block.Height, event.Attributes), nil
 			}
 		}
 	}
 }
 
-func (m *Module) handleCreateGroup(height int64, values []abcitypes.EventAttribute) {
+func (m *Module) handleCreateGroup(height int64, values []abcitypes.EventAttribute) map[string][]interface{} {
 	msg := &createGroupEvent{}
 	for _, v := range values {
 		strV := ""
@@ -100,9 +115,10 @@ func (m *Module) handleCreateGroup(height int64, values []abcitypes.EventAttribu
 	if err != nil {
 		log.Error().Str("module", "storage").Err(err)
 	}
+	return nil
 }
 
-func (m *Module) handleDeleteGroup(height int64, values []abcitypes.EventAttribute) {
+func (m *Module) handleDeleteGroup(height int64, values []abcitypes.EventAttribute) map[string][]interface{} {
 	msg := &deleteGroupEvent{}
 	for _, v := range values {
 		strV := ""
@@ -118,10 +134,16 @@ func (m *Module) handleDeleteGroup(height int64, values []abcitypes.EventAttribu
 			msg.Owner = strV
 		}
 	}
+	return nil
 }
 
-func (m *Module) handleCreateBucket(height int64, values []abcitypes.EventAttribute) {
-	msg := &createBucketEvent{}
+func (m *Module) handleCreateBucket(ctx context.Context, tx *junotypes.Tx, values []abcitypes.EventAttribute) map[string][]interface{} {
+	msg := &models.Bucket{
+		Removed:      false,
+		CreateAt:     tx.Height,
+		CreateTxHash: common.HexToHash(tx.TxHash),
+		UpdateAt:     tx.Height,
+	}
 	for _, v := range values {
 		strV := ""
 		if len(v.Value) > 2 {
@@ -129,56 +151,42 @@ func (m *Module) handleCreateBucket(height int64, values []abcitypes.EventAttrib
 		}
 		switch v.Key {
 		case "bucket_id":
-			msg.BucketId = strV
+			msg.BucketID = common.HexToHash(strV)
 		case "bucket_name":
 			msg.BucketName = strV
 		case "owner":
-			msg.Owner = strV
-		case "visibility":
-			msg.Visibility = strV
-		case "create_at":
-			createAt, _ := strconv.ParseInt(strV, 10, 64)
-			msg.CreateAt = createAt
+			msg.OwnerAddress = common.HexToAddress(strV)
+		case "payment_address":
+			msg.PaymentAddress = common.HexToAddress(strV)
+		case "global_virtual_group_family_id":
+			globalVirtualGroupFamilyId, _ := strconv.ParseUint(strV, 10, 32)
+			msg.GlobalVirtualGroupFamilyId = uint32(globalVirtualGroupFamilyId)
 		case "source_type":
 			msg.SourceType = strV
 		case "charged_read_quota":
 			chargedReadQuota, _ := strconv.ParseUint(strV, 10, 64)
 			msg.ChargedReadQuota = chargedReadQuota
-		case "payment_address":
-			msg.PaymentAddress = strV
-		case "primary_sp_id":
-			primarySpId, _ := strconv.ParseUint(strV, 10, 32)
-			msg.PrimarySpId = uint32(primarySpId)
-		case "global_virtual_group_family_id":
-			globalVirtualGroupFamilyId, _ := strconv.ParseUint(strV, 10, 32)
-			msg.GlobalVirtualGroupFamilyId = uint32(globalVirtualGroupFamilyId)
+		case "visibility":
+			msg.Visibility = strV
 		case "status":
 			msg.Status = strV
+		case "create_at":
+			createTime, _ := strconv.ParseInt(strV, 10, 64)
+			msg.CreateTime = time.Unix(createTime, 0)
+
 		}
 	}
-	bucketId, _ := strconv.ParseUint(msg.BucketId, 10, 64)
-	createAt := time.Unix(msg.CreateAt, 0)
+	msg.OperatorAddress = msg.OwnerAddress
+	msg.UpdateTxHash = msg.CreateTxHash
+	msg.UpdateTime = msg.CreateTime
 
-	err := m.db.SaveBucket(height, []types.Bucket{
-		{
-			BucketId:                   bucketId,
-			BucketName:                 msg.BucketName,
-			Owner:                      msg.Owner,
-			Visibility:                 msg.Visibility,
-			SourceType:                 msg.SourceType,
-			CreateAt:                   createAt,
-			PaymentAddress:             msg.PaymentAddress,
-			BucketStatus:               msg.Status,
-			ChargedReadQuota:           msg.ChargedReadQuota,
-			GlobalVirtualGroupFamilyId: msg.GlobalVirtualGroupFamilyId,
-		},
-	})
-	if err != nil {
-		log.Error().Str("module", "storage").Err(err)
+	k, v := m.db.SaveBucket(ctx, bucket)
+	return map[string][]interface{}{
+		k: v,
 	}
 }
 
-func (m *Module) handleDeleteBucket(height int64, values []abcitypes.EventAttribute) {
+func (m *Module) handleDeleteBucket(height int64, values []abcitypes.EventAttribute) map[string][]interface{} {
 	msg := &deleteBucketEvent{}
 	for _, v := range values {
 		strV := ""
@@ -199,9 +207,10 @@ func (m *Module) handleDeleteBucket(height int64, values []abcitypes.EventAttrib
 			msg.GlobalVirtualGroupFamilyId = uint32(globalVirtualGroupFamilyId)
 		}
 	}
+	return nil
 }
 
-func (m *Module) handleCreateObject(height int64, values []abcitypes.EventAttribute) {
+func (m *Module) handleCreateObject(height int64, values []abcitypes.EventAttribute) map[string][]interface{} {
 	msg := &createObjectEvent{}
 	for _, v := range values {
 		strV := ""
@@ -272,9 +281,10 @@ func (m *Module) handleCreateObject(height int64, values []abcitypes.EventAttrib
 	if err != nil {
 		log.Error().Str("module", "storage").Err(err)
 	}
+	return nil
 }
 
-func (m *Module) handleDeleteObject(height int64, values []abcitypes.EventAttribute) {
+func (m *Module) handleDeleteObject(height int64, values []abcitypes.EventAttribute) map[string][]interface{} {
 	msg := &deleteObjectEvent{}
 	for _, v := range values {
 		strV := ""
@@ -295,4 +305,5 @@ func (m *Module) handleDeleteObject(height int64, values []abcitypes.EventAttrib
 			msg.PrimarySpId = uint32(primarySpId)
 		}
 	}
+	return nil
 }
