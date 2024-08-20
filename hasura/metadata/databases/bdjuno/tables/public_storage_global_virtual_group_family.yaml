@@ -1,0 +1,39 @@
+table:
+  name: global_virtual_group_family
+  schema: public
+
+select_permissions:
+  - permission:
+      allow_aggregations: false
+      columns:
+        - global_virtual_group_family_id
+        - primary_sp_id
+        - global_virtual_group_ids
+        - virtual_payment_address
+        - create_at
+        - create_tx_hash
+        - create_time
+        - update_at
+        - update_tx_hash
+        - update_time
+        - removed
+      filter: {}
+      limit: 100
+    role: anonymous
+
+array_relationships:
+  - name: gvg
+    using:
+      foreign_key_constraint_on:
+        column: family_id
+        table:
+          name: global_virtual_group
+          schema: public
+
+object_relationships:
+  - name: primary_sp
+    using:
+      foreign_key_constraint_on: primary_sp_id
+  - name: gvg
+    using:
+      foreign_key_constraint_on: primary_sp_id
