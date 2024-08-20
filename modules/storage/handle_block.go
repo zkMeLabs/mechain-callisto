@@ -18,6 +18,7 @@ const (
 	EventTypeDeleteBucket = "greenfield.storage.EventDeleteBucket"
 	EventTypeCreateObject = "greenfield.storage.EventCreateObject"
 	EventTypeDeleteObject = "greenfield.storage.EventCancelCreateObject"
+	EventTypeEthereumTx   = "ethereum_tx"
 )
 
 // HandleBlock implements modules.BlockModule
@@ -37,10 +38,16 @@ func (m *Module) HandleBlock(
 }
 
 func (m *Module) parseTransactionEvents(b *tmctypes.ResultBlock, txs []*juno.Tx) {
-	log.Debug().Str("module", "distribution").Int64("height", b.Block.Height)
+	log.Debug().Str("module", "storage").Int64("height", b.Block.Height)
 	for _, tx := range txs {
 		for _, event := range tx.Events {
 			switch event.Type {
+			case EventTypeEthereumTx:
+				for _, attribute := range event.Attributes {
+					if attribute.Key == "ethereumTxHash" {
+						log.Debug().Str("module", "storage").Str(attribute.Key, attribute.Value)
+					}
+				}
 			case EventTypeCreateGroup:
 				m.handleCreateGroup(b.Block.Height, event.Attributes)
 			case EventTypeDeleteGroup:
