@@ -10,8 +10,8 @@
       "request": "launch",
       "mode": "auto",
       "program": "${workspaceFolder}/cmd/bdjuno",
-      "args": ["start", "--home", "${workspaceFolder}/deploy/data"],
-      "cwd": "${workspaceFolder}/deploy"
+      "args": ["start", "--home", "${workspaceFolder}/deployment/localup"],
+      "cwd": "${workspaceFolder}/deployment/localup"
     }
   ]
 }

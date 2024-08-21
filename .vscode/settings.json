@@ -1,0 +1,11 @@
+{
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "driver": "PostgreSQL",
+      "name": "callisto",
+      "connectString": "postgresql://postgres:postgres_mechain@localhost:5432/bdjuno?sslmode=disable&search_path=public"
+    }
+  ]
+}
