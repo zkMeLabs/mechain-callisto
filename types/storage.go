@@ -48,8 +48,7 @@ type Bucket struct {
 	Owner                      string
 	Visibility                 string
 	SourceType                 string
-	CreateAt                   uint64
-	CreateTime                 time.Time
+	CreateAt                   time.Time
 	PaymentAddress             string
 	BucketStatus               string
 	Tags                       string
@@ -80,7 +79,6 @@ func NewBucket(
 		Owner:                      owner,
 		Visibility:                 visibility,
 		SourceType:                 sourceType,
-		CreateAt:                   createAt,
 		PaymentAddress:             paymentAddress,
 		BucketStatus:               bucketStatus,
 		Tags:                       tags,
