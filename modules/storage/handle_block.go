@@ -46,9 +46,9 @@ func (m *Module) parseTransactionEvents(b *tmctypes.ResultBlock, txs []*junotype
 			case EventTypeDeleteGroup:
 				m.handleDeleteGroup(b.Block.Height, event.Attributes)
 			case EventTypeCreateBucket:
-				m.handleCreateBucket(tx, event.Attributes)
+				m.handleCreateBucket(b, tx.TxHash, event.Attributes)
 			case EventTypeDeleteBucket:
-				m.handleDeleteBucket(b.Block.Height, event.Attributes)
+				m.handleDeleteBucket(b, tx.TxHash, event.Attributes)
 			case EventTypeCreateObject:
 				m.handleCreateObject(b.Block.Height, event.Attributes)
 			case EventTypeDeleteObject:
