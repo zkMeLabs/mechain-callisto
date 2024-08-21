@@ -2,16 +2,12 @@ table:
   name: storage_group_member
   schema: public
 select_permissions:
-  - permission:
-      allow_aggregations: false
-      columns:
-        - id
-        - group_id
-        - member
-        - expiration_time
+  - role: anonymous
+    permission:
+      columns: "*"
       filter: {}
       limit: 100
-    role: anonymous
+      allow_aggregations: true
 object_relationships:
   - name: storage_group
     using:

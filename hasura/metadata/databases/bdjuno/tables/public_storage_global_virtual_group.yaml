@@ -2,26 +2,12 @@ table:
   name: global_virtual_group
   schema: public
 select_permissions:
-  - permission:
-      allow_aggregations: false
-      columns:
-        - global_virtual_group_id
-        - family_id
-        - primary_sp_id
-        - secondary_sp_ids
-        - stored_size
-        - virtual_payment_address
-        - total_deposit
-        - create_at
-        - create_tx_hash
-        - create_time
-        - update_at
-        - update_tx_hash
-        - update_time
-        - removed
+  - role: anonymous
+    permission:
+      columns: "*"
       filter: {}
       limit: 100
-    role: anonymous
+      allow_aggregations: true
 object_relationships:
   - name: storage_provider
     using:
