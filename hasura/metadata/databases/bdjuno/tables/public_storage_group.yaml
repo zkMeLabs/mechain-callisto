@@ -2,25 +2,12 @@ table:
   name: storage_group
   schema: public
 select_permissions:
-  - permission:
-      columns:
-        - owner_address
-        - group_id
-        - group_name
-        - source_type
-        - extra
-        - account_id
-        - operator_address
-        - expiration_time
-        - create_at
-        - create_time
-        - update_at
-        - update_time
-        - removed
-        - tags
+  - role: anonymous
+    permission:
+      columns: "*"
       filter: {}
       limit: 100
-    role: anonymous
+      allow_aggregations: true
 array_relationships:
   - name: group_members
     using:

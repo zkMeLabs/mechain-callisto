@@ -2,17 +2,9 @@ table:
   name: permission
   schema: public
 select_permissions:
-  - permission:
-      columns:
-        - principal_type
-        - principal_value
-        - resource_type
-        - resource_id
-        - policy_id
-        - create_time
-        - update_time
-        - expiration_time
-        - removed
+  - role: anonymous
+    permission:
+      columns: "*"
       filter: {}
       limit: 100
-    role: anonymous
+      allow_aggregations: true
