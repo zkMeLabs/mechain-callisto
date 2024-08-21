@@ -4,7 +4,6 @@ table:
 
 select_permissions:
   - permission:
-      allow_aggregations: false
       columns:
         - global_virtual_group_family_id
         - primary_sp_id
