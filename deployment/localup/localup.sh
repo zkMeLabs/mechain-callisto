@@ -13,7 +13,7 @@ function stop() {
 function start() {
     docker compose up -d
     echo "wait 30s for graphql engine start..."
-    for ((i = 20; i > 0; i -= 3)); do
+    for ((i = 30; i > 0; i -= 3)); do
         echo "please wait ${i}s..."
         sleep 3
     done
@@ -23,6 +23,8 @@ function start() {
 
     echo "Initializing the configuration..."
     ${bin} --home "${basedir}" parse genesis-file --genesis-file-path ./genesis.json
+
+    cp ${basedir}/config.yaml ${basedir}/data
 
     # echo "run BDjuno...."
     # # nohup "${bin}" start --home "${basedir}" >"${basedir}"/bdjuno.log 2>&1 &
