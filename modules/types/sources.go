@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	sptypes "github.com/forbole/bdjuno/v4/modules/sp/types"
+
 	inflationtypes "github.com/evmos/evmos/v14/x/inflation/types"
 
 	"github.com/forbole/juno/v5/node/remote"
@@ -16,6 +18,7 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	storagetypes "github.com/forbole/bdjuno/v4/modules/storage/types"
+	vgtypes "github.com/forbole/bdjuno/v4/modules/virtualgroup/types"
 	"github.com/forbole/juno/v5/node/local"
 
 	"cosmossdk.io/simapp/params"
@@ -42,11 +45,15 @@ import (
 	slashingsource "github.com/forbole/bdjuno/v4/modules/slashing/source"
 	localslashingsource "github.com/forbole/bdjuno/v4/modules/slashing/source/local"
 	remoteslashingsource "github.com/forbole/bdjuno/v4/modules/slashing/source/remote"
+	spsource "github.com/forbole/bdjuno/v4/modules/sp/source"
+	remotespsource "github.com/forbole/bdjuno/v4/modules/sp/source/remote"
 	stakingsource "github.com/forbole/bdjuno/v4/modules/staking/source"
 	localstakingsource "github.com/forbole/bdjuno/v4/modules/staking/source/local"
 	remotestakingsource "github.com/forbole/bdjuno/v4/modules/staking/source/remote"
 	storagesource "github.com/forbole/bdjuno/v4/modules/storage/source"
 	remotestoragesource "github.com/forbole/bdjuno/v4/modules/storage/source/remote"
+	vgsource "github.com/forbole/bdjuno/v4/modules/virtualgroup/source"
+	remotevgsource "github.com/forbole/bdjuno/v4/modules/virtualgroup/source/remote"
 	nodeconfig "github.com/forbole/juno/v5/node/config"
 )
 
@@ -59,6 +66,8 @@ type Sources struct {
 	SlashingSource  slashingsource.Source
 	StakingSource   stakingsource.Source
 	StorageSource   storagesource.Source
+	SpSource        spsource.Source
+	VGSource        vgsource.Source
 }
 
 func BuildSources(nodeCfg nodeconfig.Config, encodingConfig *params.EncodingConfig) (*Sources, error) {
@@ -132,6 +141,17 @@ func buildRemoteSources(cfg *remote.Details) (*Sources, error) {
 		MintSource:      remotemintsource.NewSource(source, minttypes.NewQueryClient(source.GrpcConn)),
 		SlashingSource:  remoteslashingsource.NewSource(source, slashingtypes.NewQueryClient(source.GrpcConn)),
 		StakingSource:   remotestakingsource.NewSource(source, stakingtypes.NewQueryClient(source.GrpcConn)),
-		StorageSource:   remotestoragesource.NewSource(source, storagetypes.NewQueryClient(source.GrpcConn)),
+		StorageSource: remotestoragesource.NewSource(
+			source,
+			storagetypes.NewQueryClient(source.GrpcConn),
+		),
+		SpSource: remotespsource.NewSource(
+			source,
+			sptypes.NewQueryClient(source.GrpcConn),
+		),
+		VGSource: remotevgsource.NewSource(
+			source,
+			vgtypes.NewQueryClient(source.GrpcConn),
+		),
 	}, nil
 }

@@ -1,17 +1,14 @@
 package remote
 
 import (
-	permission "github.com/forbole/bdjuno/v4/modules/storage/permission"
-	types "github.com/forbole/bdjuno/v4/modules/storage/types"
-	vitualgroup "github.com/forbole/bdjuno/v4/modules/storage/vitualgroup"
-	"github.com/forbole/juno/v5/node/remote"
-
+	permission "github.com/forbole/bdjuno/v4/modules/permission/types"
 	storagesource "github.com/forbole/bdjuno/v4/modules/storage/source"
+	"github.com/forbole/bdjuno/v4/modules/storage/types"
+	vgtypes "github.com/forbole/bdjuno/v4/modules/virtualgroup/types"
+	"github.com/forbole/juno/v5/node/remote"
 )
 
-var (
-	_ storagesource.Source = &Source{}
-)
+var _ storagesource.Source = &Source{}
 
 // Source implements storage.Source using a remote node
 type Source struct {
@@ -95,25 +92,25 @@ func (s Source) HeadGroupMember(height int64, member, groupOwner, groupName stri
 	return *res.GroupMember, nil
 }
 
-func (s Source) HeadObject(height int64, bucketName, objectName string) (types.ObjectInfo, vitualgroup.GlobalVirtualGroup, error) {
+func (s Source) HeadObject(height int64, bucketName, objectName string) (types.ObjectInfo, vgtypes.GlobalVirtualGroup, error) {
 	res, err := s.storageClient.HeadObject(
 		remote.GetHeightRequestContext(s.Ctx, height),
 		&types.QueryHeadObjectRequest{BucketName: bucketName, ObjectName: objectName},
 	)
 	if err != nil {
-		return types.ObjectInfo{}, vitualgroup.GlobalVirtualGroup{}, err
+		return types.ObjectInfo{}, vgtypes.GlobalVirtualGroup{}, err
 	}
 
 	return *res.ObjectInfo, *res.GlobalVirtualGroup, nil
 }
 
-func (s Source) HeadObjectById(height int64, objectId string) (types.ObjectInfo, vitualgroup.GlobalVirtualGroup, error) {
+func (s Source) HeadObjectById(height int64, objectId string) (types.ObjectInfo, vgtypes.GlobalVirtualGroup, error) {
 	res, err := s.storageClient.HeadObjectById(
 		remote.GetHeightRequestContext(s.Ctx, height),
 		&types.QueryHeadObjectByIdRequest{ObjectId: objectId},
 	)
 	if err != nil {
-		return types.ObjectInfo{}, vitualgroup.GlobalVirtualGroup{}, err
+		return types.ObjectInfo{}, vgtypes.GlobalVirtualGroup{}, err
 	}
 
 	return *res.ObjectInfo, *res.GlobalVirtualGroup, nil

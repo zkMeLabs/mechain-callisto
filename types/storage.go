@@ -31,6 +31,7 @@ func NewStorageGroup(
 		Tags:       tags,
 	}
 }
+
 func (g StorageGroup) Equal(v StorageGroup) bool {
 	return g.GroupId == v.GroupId &&
 		g.GroupName == v.GroupName &&
@@ -78,7 +79,6 @@ func NewBucket(
 		Owner:                      owner,
 		Visibility:                 visibility,
 		SourceType:                 sourceType,
-		CreateAt:                   createAt,
 		PaymentAddress:             paymentAddress,
 		BucketStatus:               bucketStatus,
 		Tags:                       tags,

@@ -1,9 +1,9 @@
 package source
 
 import (
-	permission "github.com/forbole/bdjuno/v4/modules/storage/permission"
+	permissiontypes "github.com/forbole/bdjuno/v4/modules/permission/types"
 	"github.com/forbole/bdjuno/v4/modules/storage/types"
-	vitualgroup "github.com/forbole/bdjuno/v4/modules/storage/vitualgroup"
+	vgtypes "github.com/forbole/bdjuno/v4/modules/virtualgroup/types"
 )
 
 type Source interface {
@@ -12,9 +12,9 @@ type Source interface {
 	HeadBucketExtra(height int64, bucketName string) (types.InternalBucketInfo, error)
 
 	HeadGroup(height int64, groupOwner, groupName string) (types.GroupInfo, error)
-	HeadGroupMember(height int64, member, groupOwner, groupName string) (permission.GroupMember, error)
+	HeadGroupMember(height int64, member, groupOwner, groupName string) (permissiontypes.GroupMember, error)
 
-	HeadObject(height int64, bucketName, objectName string) (types.ObjectInfo, vitualgroup.GlobalVirtualGroup, error)
-	HeadObjectById(height int64, objectId string) (types.ObjectInfo, vitualgroup.GlobalVirtualGroup, error)
+	HeadObject(height int64, bucketName, objectName string) (types.ObjectInfo, vgtypes.GlobalVirtualGroup, error)
+	HeadObjectById(height int64, objectId string) (types.ObjectInfo, vgtypes.GlobalVirtualGroup, error)
 	HeadShadowObject(height int64, bucketName, objectName string) (types.ShadowObjectInfo, error)
 }
