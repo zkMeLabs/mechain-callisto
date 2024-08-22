@@ -19,7 +19,7 @@ function start() {
     done
 
     echo "Importing the Hasura metadata..."
-    hasura metadata apply --project "${project_path}"/hasura --endpoint http://localhost:8080 --admin-secret mechain
+    hasura metadata apply --project "${project_path}"/hasura --endpoint http://localhost:9090 --admin-secret mechain
 
     echo "Initializing the configuration..."
     ${bin} --home "${basedir}" parse genesis-file --genesis-file-path ./genesis.json
