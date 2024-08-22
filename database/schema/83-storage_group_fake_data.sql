@@ -1,4 +1,4 @@
-INSERT INTO storage_group (
+INSERT INTO groups (
         id,
         owner_address,
         group_id,
@@ -100,7 +100,7 @@ VALUES (
         FALSE,
         '{"key": "value5"}'
     );
-INSERT INTO storage_group_member (id, group_id, member, expiration_time)
+INSERT INTO group_member (id, group_id, member, expiration_time)
 VALUES (
         1,
         '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',

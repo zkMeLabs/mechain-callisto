@@ -1,5 +1,5 @@
 table:
-  name: storage_provider
+  name: storage_providers
   schema: public
 
 select_permissions:

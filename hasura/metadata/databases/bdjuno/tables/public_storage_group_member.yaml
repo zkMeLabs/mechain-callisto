@@ -1,5 +1,5 @@
 table:
-  name: storage_group_member
+  name: group_member
   schema: public
 select_permissions:
   - role: anonymous
@@ -9,6 +9,6 @@ select_permissions:
       limit: 100
       allow_aggregations: true
 object_relationships:
-  - name: storage_group
+  - name: groups
     using:
       foreign_key_constraint_on: group_id

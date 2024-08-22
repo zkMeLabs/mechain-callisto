@@ -1,5 +1,5 @@
 table:
-  name: global_virtual_group
+  name: global_virtual_groups
   schema: public
 select_permissions:
   - role: anonymous

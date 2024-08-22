@@ -1,5 +1,5 @@
--- bucket tables
-CREATE TABLE bucket (
+-- buckets tables
+CREATE TABLE buckets (
     id BIGINT PRIMARY KEY,
     bucket_id INT NOT NULL UNIQUE,
     bucket_name TEXT NOT NULL UNIQUE CHECK (
@@ -28,12 +28,12 @@ CREATE TABLE bucket (
     tags JSONB,
     UNIQUE (bucket_id),
     UNIQUE (bucket_name),
-    CONSTRAINT fk_family_id FOREIGN KEY (global_virtual_group_family_id) REFERENCES global_virtual_group_family(global_virtual_group_family_id)
+    CONSTRAINT fk_family_id FOREIGN KEY (global_virtual_group_family_id) REFERENCES global_virtual_group_families(global_virtual_group_family_id)
 );
-CREATE INDEX idx_bucket_owner ON bucket(owner_address);
-CREATE INDEX idx_bucket_gvgf_id ON bucket(global_virtual_group_family_id);
--- object tables
-CREATE TABLE object (
+CREATE INDEX idx_bucket_owner ON buckets(owner_address);
+CREATE INDEX idx_bucket_gvgf_id ON buckets(global_virtual_group_family_id);
+-- objects tables
+CREATE TABLE objects (
     id BIGINT PRIMARY KEY,
     bucket_id INT NOT NULL,
     bucket_name TEXT NOT NULL,
@@ -65,14 +65,14 @@ CREATE TABLE object (
     content_updated_time TIMESTAMPTZ,
     updater TEXT,
     version BIGINT,
-    CONSTRAINT fk_bucket FOREIGN KEY (bucket_id) REFERENCES bucket(bucket_id)
+    CONSTRAINT fk_bucket FOREIGN KEY (bucket_id) REFERENCES buckets(bucket_id)
 );
-CREATE INDEX idx_object_bucket_id ON object(bucket_id);
-CREATE INDEX idx_object_bucket_name_object_name ON object(bucket_name, object_name);
-CREATE INDEX idx_object_owner ON object(owner_address);
-CREATE INDEX idx_object_local_virtual_group_id ON object(local_virtual_group_id);
+CREATE INDEX idx_object_bucket_id ON objects(bucket_id);
+CREATE INDEX idx_object_bucket_name_object_name ON objects(bucket_name, object_name);
+CREATE INDEX idx_object_owner ON objects(owner_address);
+CREATE INDEX idx_object_local_virtual_group_id ON objects(local_virtual_group_id);
 -- group tables
-CREATE TABLE storage_group (
+CREATE TABLE groups (
     id BIGINT PRIMARY KEY,
     owner_address TEXT NOT NULL,
     group_id TEXT NOT NULL,
@@ -90,16 +90,16 @@ CREATE TABLE storage_group (
     tags JSONB,
     UNIQUE (group_id)
 );
-CREATE INDEX idx_group_owner ON "storage_group"(owner_address);
-CREATE INDEX idx_group_group_id ON "storage_group"(group_id);
-CREATE INDEX idx_group_group_name ON "storage_group"(group_name);
--- storage_group_member table
-CREATE TABLE storage_group_member (
+CREATE INDEX idx_group_owner ON "groups"(owner_address);
+CREATE INDEX idx_group_group_id ON "groups"(group_id);
+CREATE INDEX idx_group_group_name ON "groups"(group_name);
+-- group_member table
+CREATE TABLE group_member (
     id NUMERIC PRIMARY KEY,
     group_id TEXT NOT NULL,
     member TEXT NOT NULL,
     expiration_time TIMESTAMPTZ,
-    CONSTRAINT fk_group FOREIGN KEY (group_id) REFERENCES storage_group(group_id)
+    CONSTRAINT fk_group FOREIGN KEY (group_id) REFERENCES groups(group_id)
 );
 -- permission table
 CREATE TABLE permission (

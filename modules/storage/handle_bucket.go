@@ -1,100 +1,184 @@
 package storage
 
 import (
-	"strconv"
+	"context"
 	"time"
 
-	abcitypes "github.com/cometbft/cometbft/abci/types"
 	tmctypes "github.com/cometbft/cometbft/rpc/core/types"
+	"github.com/cosmos/gogoproto/proto"
 	"github.com/forbole/bdjuno/v4/database/models"
-	"github.com/rs/zerolog/log"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+	storagetypes "github.com/forbole/bdjuno/v4/modules/storage/types"
 )
 
-func (m *Module) handleCreateBucket(block *tmctypes.ResultBlock, txHash string, values []abcitypes.EventAttribute) {
-	b := &models.Bucket{
-		Removed:      false,
-		CreateAt:     block.Block.Height,
-		CreateTxHash: txHash,
-		UpdateAt:     block.Block.Height,
-	}
-	for _, v := range values {
-		strV := ""
-		if len(v.Value) > 2 {
-			strV = v.Value[1 : len(v.Value)-1]
-		}
-		switch v.Key {
-		case "bucket_id":
-			b.BucketID = strV
-		case "bucket_name":
-			b.BucketName = strV
-		case "owner":
-			b.OwnerAddress = strV
-		case "payment_address":
-			b.PaymentAddress = strV
-		case "global_virtual_group_family_id":
-			globalVirtualGroupFamilyId, _ := strconv.ParseUint(strV, 10, 32)
-			b.GlobalVirtualGroupFamilyId = uint32(globalVirtualGroupFamilyId)
-		case "source_type":
-			b.SourceType = strV
-		case "charged_read_quota":
-			chargedReadQuota, _ := strconv.ParseUint(strV, 10, 64)
-			b.ChargedReadQuota = chargedReadQuota
-		case "visibility":
-			b.Visibility = strV
-		case "status":
-			b.Status = strV
-		case "create_at":
-			createTime, _ := strconv.ParseInt(strV, 10, 64)
-			b.CreateTime = time.Unix(createTime, 0)
+var (
+	EventCreateBucket             = proto.MessageName(&storagetypes.EventCreateBucket{})
+	EventDeleteBucket             = proto.MessageName(&storagetypes.EventDeleteBucket{})
+	EventUpdateBucketInfo         = proto.MessageName(&storagetypes.EventUpdateBucketInfo{})
+	EventDiscontinueBucket        = proto.MessageName(&storagetypes.EventDiscontinueBucket{})
+	EventMigrationBucket          = proto.MessageName(&storagetypes.EventMigrationBucket{})
+	EventCancelMigrationBucket    = proto.MessageName(&storagetypes.EventCancelMigrationBucket{})
+	EventRejectMigrateBucket      = proto.MessageName(&storagetypes.EventRejectMigrateBucket{})
+	EventCompleteMigrationBucket  = proto.MessageName(&storagetypes.EventCompleteMigrationBucket{})
+	EventToggleSPAsDelegatedAgent = proto.MessageName(&storagetypes.EventToggleSPAsDelegatedAgent{})
+)
 
-		}
-	}
-	b.OperatorAddress = b.OwnerAddress
-	b.UpdateTxHash = b.CreateTxHash
-	b.UpdateTime = b.CreateTime
+var BucketEvents = map[string]bool{
+	EventCreateBucket:             true,
+	EventDeleteBucket:             true,
+	EventUpdateBucketInfo:         true,
+	EventDiscontinueBucket:        true,
+	EventMigrationBucket:          true,
+	EventCancelMigrationBucket:    true,
+	EventRejectMigrateBucket:      true,
+	EventCompleteMigrationBucket:  true,
+	EventToggleSPAsDelegatedAgent: true,
+}
 
-	dsn := "postgresql://postgres:postgres_mechain@localhost:5432/bdjuno?sslmode=disable&search_path=public"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	db.AutoMigrate(&models.Bucket{})
-	if err != nil {
-		log.Fatal().Str("module", "storage").Err(err)
+func (m *Module) handleCreateBucket(ctx context.Context, block *tmctypes.ResultBlock, txHash string, createBucket *storagetypes.EventCreateBucket) map[string][]interface{} {
+	bucket := &models.Bucket{
+		BucketID:                   createBucket.BucketId.BigInt().String(),
+		BucketName:                 createBucket.BucketName,
+		OwnerAddress:               createBucket.Owner,
+		PaymentAddress:             createBucket.PaymentAddress,
+		GlobalVirtualGroupFamilyId: createBucket.GlobalVirtualGroupFamilyId,
+		OperatorAddress:            createBucket.Owner,
+		SourceType:                 createBucket.SourceType.String(),
+		ChargedReadQuota:           createBucket.ChargedReadQuota,
+		Visibility:                 createBucket.Visibility.String(),
+		Status:                     createBucket.Status.String(),
+		Removed:                    false,
+		CreateAt:                   block.Block.Height,
+		CreateTxHash:               txHash,
+		CreateTime:                 time.Unix(createBucket.CreateAt, 0),
+		UpdateAt:                   block.Block.Height,
+		UpdateTxHash:               txHash,
+		UpdateTime:                 block.Block.Time,
 	}
-	result := m.db.G.Create(b)
-	if result.Error != nil {
-		log.Fatal().Str("module", "storage").Err(result.Error)
+	k, v := m.db.SaveBucketToSQL(ctx, bucket)
+	return map[string][]interface{}{
+		k: v,
 	}
 }
 
-func (m *Module) handleDeleteBucket(block *tmctypes.ResultBlock, txHash string, values []abcitypes.EventAttribute) {
-	b := &models.Bucket{
-		Removed:      true,
+func (m *Module) handleDeleteBucket(ctx context.Context, block *tmctypes.ResultBlock, txHash string, deleteBucket *storagetypes.EventDeleteBucket) map[string][]interface{} {
+	bucket := &models.Bucket{
+		BucketID:                   deleteBucket.BucketId.BigInt().String(),
+		BucketName:                 deleteBucket.BucketName,
+		OwnerAddress:               deleteBucket.Owner,
+		GlobalVirtualGroupFamilyId: deleteBucket.GlobalVirtualGroupFamilyId,
+		Removed:                    true,
+		UpdateAt:                   block.Block.Height,
+		UpdateTxHash:               txHash,
+		UpdateTime:                 block.Block.Time,
+	}
+
+	k, v := m.db.UpdateBucketToSQL(ctx, bucket)
+	return map[string][]interface{}{
+		k: v,
+	}
+}
+
+func (m *Module) handleDiscontinueBucket(ctx context.Context, block *tmctypes.ResultBlock, txHash string, discontinueBucket *storagetypes.EventDiscontinueBucket) map[string][]interface{} {
+	bucket := &models.Bucket{
+		BucketID:     discontinueBucket.BucketId.BigInt().String(),
+		BucketName:   discontinueBucket.BucketName,
+		DeleteReason: discontinueBucket.Reason,
+		DeleteAt:     discontinueBucket.DeleteAt,
+		Status:       storagetypes.BUCKET_STATUS_DISCONTINUED.String(),
 		UpdateAt:     block.Block.Height,
 		UpdateTxHash: txHash,
-		UpdateTime:   time.Unix(block.Block.Time.Unix(), 0),
+		UpdateTime:   block.Block.Time,
 	}
-	for _, v := range values {
-		strV := ""
-		if len(v.Value) > 2 {
-			strV = v.Value[1 : len(v.Value)-1]
-		}
-		switch v.Key {
-		case "bucket_id":
-			b.BucketID = strV
-		case "bucket_name":
-			b.BucketName = strV
-		case "owner":
-			b.OwnerAddress = strV
-		case "operator":
-			b.OperatorAddress = strV
-		case "global_virtual_group_family_id":
-			globalVirtualGroupFamilyId, _ := strconv.ParseUint(strV, 10, 32)
-			b.GlobalVirtualGroupFamilyId = uint32(globalVirtualGroupFamilyId)
-		}
+
+	k, v := m.db.UpdateBucketToSQL(ctx, bucket)
+	return map[string][]interface{}{
+		k: v,
 	}
-	result := m.db.G.Where("bucket_id = ?", b.BucketID).Updates(b)
-	if result.Error != nil {
-		log.Fatal().Str("module", "storage").Err(result.Error)
+}
+
+func (m *Module) handleUpdateBucketInfo(ctx context.Context, block *tmctypes.ResultBlock, txHash string, updateBucket *storagetypes.EventUpdateBucketInfo) map[string][]interface{} {
+	bucket := &models.Bucket{
+		BucketName:                 updateBucket.BucketName,
+		BucketID:                   updateBucket.BucketId.BigInt().String(),
+		ChargedReadQuota:           updateBucket.ChargedReadQuota,
+		PaymentAddress:             updateBucket.PaymentAddress,
+		Visibility:                 updateBucket.Visibility.String(),
+		GlobalVirtualGroupFamilyId: updateBucket.GlobalVirtualGroupFamilyId,
+		UpdateAt:                   block.Block.Height,
+		UpdateTxHash:               txHash,
+		UpdateTime:                 block.Block.Time,
+	}
+
+	k, v := m.db.UpdateBucketToSQL(ctx, bucket)
+	return map[string][]interface{}{
+		k: v,
+	}
+}
+
+func (m *Module) handleEventMigrationBucket(ctx context.Context, block *tmctypes.ResultBlock, txHash string, migrationBucket *storagetypes.EventMigrationBucket) map[string][]interface{} {
+	bucket := &models.Bucket{
+		BucketID:     migrationBucket.BucketId.BigInt().String(),
+		BucketName:   migrationBucket.BucketName,
+		Status:       migrationBucket.Status.String(),
+		UpdateAt:     block.Block.Height,
+		UpdateTxHash: txHash,
+		UpdateTime:   block.Block.Time,
+	}
+
+	k, v := m.db.UpdateBucketToSQL(ctx, bucket)
+	return map[string][]interface{}{
+		k: v,
+	}
+}
+
+func (m *Module) handleEventCancelMigrationBucket(ctx context.Context, block *tmctypes.ResultBlock, txHash string, cancelMigrationBucket *storagetypes.EventCancelMigrationBucket) map[string][]interface{} {
+	bucket := &models.Bucket{
+		BucketID:   cancelMigrationBucket.BucketId.BigInt().String(),
+		BucketName: cancelMigrationBucket.BucketName,
+		Status:     cancelMigrationBucket.Status.String(),
+
+		UpdateAt:     block.Block.Height,
+		UpdateTxHash: txHash,
+		UpdateTime:   block.Block.Time,
+	}
+
+	k, v := m.db.UpdateBucketToSQL(ctx, bucket)
+	return map[string][]interface{}{
+		k: v,
+	}
+}
+
+func (m *Module) handleEventRejectMigrateBucket(ctx context.Context, block *tmctypes.ResultBlock, txHash string, rejectMigrateBucket *storagetypes.EventRejectMigrateBucket) map[string][]interface{} {
+	bucket := &models.Bucket{
+		BucketID:   rejectMigrateBucket.BucketId.BigInt().String(),
+		BucketName: rejectMigrateBucket.BucketName,
+		Status:     rejectMigrateBucket.Status.String(),
+
+		UpdateAt:     block.Block.Height,
+		UpdateTxHash: txHash,
+		UpdateTime:   block.Block.Time,
+	}
+
+	k, v := m.db.UpdateBucketToSQL(ctx, bucket)
+	return map[string][]interface{}{
+		k: v,
+	}
+}
+
+func (m *Module) handleCompleteMigrationBucket(ctx context.Context, block *tmctypes.ResultBlock, txHash string, completeMigrationBucket *storagetypes.EventCompleteMigrationBucket) map[string][]interface{} {
+	bucket := &models.Bucket{
+		BucketID:                   completeMigrationBucket.BucketId.BigInt().String(),
+		BucketName:                 completeMigrationBucket.BucketName,
+		GlobalVirtualGroupFamilyId: completeMigrationBucket.GlobalVirtualGroupFamilyId,
+		Status:                     completeMigrationBucket.Status.String(),
+
+		UpdateAt:     block.Block.Height,
+		UpdateTxHash: txHash,
+		UpdateTime:   block.Block.Time,
+	}
+
+	k, v := m.db.UpdateBucketToSQL(ctx, bucket)
+	return map[string][]interface{}{
+		k: v,
 	}
 }

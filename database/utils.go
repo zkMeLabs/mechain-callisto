@@ -5,7 +5,7 @@ import (
 )
 
 // InsertEnableModules allows to save enabled module into the database
-func (db *Db) InsertEnableModules(modules []string) error {
+func (db *DB) InsertEnableModules(modules []string) error {
 	if len(modules) == 0 {
 		return nil
 	}

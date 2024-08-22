@@ -1,4 +1,4 @@
-package storage
+package virtualgroup
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -32,5 +32,5 @@ func NewModule(source storagesource.Source, cdc codec.Codec, db *database.DB) *M
 
 // Name implements modules.Module
 func (m *Module) Name() string {
-	return "storage"
+	return "virtualgroup"
 }

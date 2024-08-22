@@ -1,4 +1,4 @@
-INSERT INTO bucket (
+INSERT INTO buckets (
         id,
         bucket_id,
         bucket_name,

@@ -1,4 +1,4 @@
-INSERT INTO storage_provider (
+INSERT INTO storage_providers (
         id,
         sp_id,
         operator_address,
@@ -160,7 +160,7 @@ VALUES (
         '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcd',
         TRUE
     );
-INSERT INTO global_virtual_group_family (
+INSERT INTO global_virtual_group_families (
         id,
         global_virtual_group_family_id,
         primary_sp_id,
@@ -244,7 +244,7 @@ VALUES (
         '2021-05-02 00:00:00',
         FALSE
     );
-INSERT INTO global_virtual_group (
+INSERT INTO global_virtual_groups (
         id,
         global_virtual_group_id,
         family_id,

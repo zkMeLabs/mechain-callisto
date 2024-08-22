@@ -1,5 +1,5 @@
 table:
-  name: global_virtual_group_family
+  name: global_virtual_group_families
   schema: public
 
 select_permissions:
@@ -16,7 +16,7 @@ array_relationships:
       foreign_key_constraint_on:
         column: family_id
         table:
-          name: global_virtual_group
+          name: global_virtual_groups
           schema: public
 
 object_relationships:

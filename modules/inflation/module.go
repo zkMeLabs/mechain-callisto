@@ -17,12 +17,12 @@ var (
 // Module represent database/inflation module
 type Module struct {
 	cdc    codec.Codec
-	db     *database.Db
+	db     *database.DB
 	source inflationsource.Source
 }
 
 // NewModule returns a new Module instance
-func NewModule(source inflationsource.Source, cdc codec.Codec, db *database.Db) *Module {
+func NewModule(source inflationsource.Source, cdc codec.Codec, db *database.DB) *Module {
 	return &Module{
 		cdc:    cdc,
 		db:     db,

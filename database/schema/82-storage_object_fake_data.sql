@@ -1,4 +1,4 @@
-INSERT INTO object (
+INSERT INTO objects (
         id,
         bucket_id,
         bucket_name,

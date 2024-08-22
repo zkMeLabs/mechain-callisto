@@ -1,12 +1,10 @@
-package storage
+package sp
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	storagesource "github.com/forbole/bdjuno/v4/modules/storage/source"
-
-	"github.com/forbole/juno/v5/modules"
-
 	"github.com/forbole/bdjuno/v4/database"
+	storagesource "github.com/forbole/bdjuno/v4/modules/storage/source"
+	"github.com/forbole/juno/v5/modules"
 )
 
 var (
@@ -32,5 +30,5 @@ func NewModule(source storagesource.Source, cdc codec.Codec, db *database.DB) *M
 
 // Name implements modules.Module
 func (m *Module) Name() string {
-	return "storage"
+	return "sp"
 }
