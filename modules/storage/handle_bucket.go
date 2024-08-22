@@ -2,9 +2,12 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"time"
 
+	abci "github.com/cometbft/cometbft/abci/types"
 	tmctypes "github.com/cometbft/cometbft/rpc/core/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/gogoproto/proto"
 	"github.com/forbole/bdjuno/v4/database/models"
 	storagetypes "github.com/forbole/bdjuno/v4/modules/storage/types"
@@ -32,6 +35,66 @@ var BucketEvents = map[string]bool{
 	EventRejectMigrateBucket:      true,
 	EventCompleteMigrationBucket:  true,
 	EventToggleSPAsDelegatedAgent: true,
+}
+
+func (m *Module) ExtractBucketEventStatements(ctx context.Context, block *tmctypes.ResultBlock, txHash string, event sdk.Event) (map[string][]interface{}, error) {
+	typedEvent, err := sdk.ParseTypedEvent(abci.Event(event))
+	if err != nil {
+		return nil, err
+	}
+
+	switch event.Type {
+	case EventCreateBucket:
+		createBucket, ok := typedEvent.(*storagetypes.EventCreateBucket)
+		if !ok {
+			return nil, errors.New("create bucket event assert error")
+		}
+		return m.handleCreateBucket(ctx, block, txHash, createBucket), nil
+	case EventDeleteBucket:
+		deleteBucket, ok := typedEvent.(*storagetypes.EventDeleteBucket)
+		if !ok {
+			return nil, errors.New("delete bucket event assert error")
+		}
+		return m.handleDeleteBucket(ctx, block, txHash, deleteBucket), nil
+	case EventUpdateBucketInfo:
+		updateBucketInfo, ok := typedEvent.(*storagetypes.EventUpdateBucketInfo)
+		if !ok {
+			return nil, errors.New("update bucket event assert error")
+		}
+		return m.handleUpdateBucketInfo(ctx, block, txHash, updateBucketInfo), nil
+	case EventDiscontinueBucket:
+		discontinueBucket, ok := typedEvent.(*storagetypes.EventDiscontinueBucket)
+		if !ok {
+			return nil, errors.New("discontinue bucket event assert error")
+		}
+		return m.handleDiscontinueBucket(ctx, block, txHash, discontinueBucket), nil
+	case EventMigrationBucket:
+		migrationBucket, ok := typedEvent.(*storagetypes.EventMigrationBucket)
+		if !ok {
+			return nil, errors.New("migration bucket event assert error")
+		}
+		return m.handleEventMigrationBucket(ctx, block, txHash, migrationBucket), nil
+	case EventCancelMigrationBucket:
+		cancelMigrationBucket, ok := typedEvent.(*storagetypes.EventCancelMigrationBucket)
+		if !ok {
+			return nil, errors.New("cancel migration bucket event assert error")
+		}
+		return m.handleEventCancelMigrationBucket(ctx, block, txHash, cancelMigrationBucket), nil
+	case EventRejectMigrateBucket:
+		rejectMigrateBucket, ok := typedEvent.(*storagetypes.EventRejectMigrateBucket)
+		if !ok {
+			return nil, errors.New("reject migration bucket event assert error")
+		}
+		return m.handleEventRejectMigrateBucket(ctx, block, txHash, rejectMigrateBucket), nil
+	case EventCompleteMigrationBucket:
+		completeMigrationBucket, ok := typedEvent.(*storagetypes.EventCompleteMigrationBucket)
+		if !ok {
+			return nil, errors.New("complete migrate bucket event assert error")
+		}
+		return m.handleCompleteMigrationBucket(ctx, block, txHash, completeMigrationBucket), nil
+	}
+
+	return nil, nil
 }
 
 func (m *Module) handleCreateBucket(ctx context.Context, block *tmctypes.ResultBlock, txHash string, createBucket *storagetypes.EventCreateBucket) map[string][]interface{} {

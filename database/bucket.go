@@ -9,14 +9,6 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func (db *DB) SaveBucket(ctx context.Context, bucket *models.Bucket) error {
-	return nil
-}
-
-func (db *DB) UpdateBucket(ctx context.Context, bucket *models.Bucket) error {
-	return nil
-}
-
 func (db *DB) SaveBucketToSQL(ctx context.Context, bucket *models.Bucket) (string, []interface{}) {
 	stat := db.G.Session(&gorm.Session{DryRun: true}).Table((&models.Bucket{}).TableName()).Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "bucket_id"}},

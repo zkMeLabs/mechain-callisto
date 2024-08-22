@@ -1,6 +1,6 @@
 -- buckets tables
 CREATE TABLE buckets (
-    id BIGINT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     bucket_id INT NOT NULL UNIQUE,
     bucket_name TEXT NOT NULL UNIQUE CHECK (
         LENGTH(bucket_name) BETWEEN 3 AND 63
@@ -34,7 +34,7 @@ CREATE INDEX idx_bucket_owner ON buckets(owner_address);
 CREATE INDEX idx_bucket_gvgf_id ON buckets(global_virtual_group_family_id);
 -- objects tables
 CREATE TABLE objects (
-    id BIGINT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     bucket_id INT NOT NULL,
     bucket_name TEXT NOT NULL,
     object_id TEXT NOT NULL UNIQUE,
@@ -73,7 +73,7 @@ CREATE INDEX idx_object_owner ON objects(owner_address);
 CREATE INDEX idx_object_local_virtual_group_id ON objects(local_virtual_group_id);
 -- group tables
 CREATE TABLE groups (
-    id BIGINT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     owner_address TEXT NOT NULL,
     group_id TEXT NOT NULL,
     group_name TEXT,
@@ -95,7 +95,7 @@ CREATE INDEX idx_group_group_id ON "groups"(group_id);
 CREATE INDEX idx_group_group_name ON "groups"(group_name);
 -- group_member table
 CREATE TABLE group_member (
-    id NUMERIC PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     group_id TEXT NOT NULL,
     member TEXT NOT NULL,
     expiration_time TIMESTAMPTZ,
@@ -103,7 +103,7 @@ CREATE TABLE group_member (
 );
 -- permission table
 CREATE TABLE permission (
-    id BIGINT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     principal_type INT NOT NULL,
     principal_value TEXT NOT NULL,
     resource_type TEXT NOT NULL,

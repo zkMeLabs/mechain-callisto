@@ -1,6 +1,6 @@
 -- storage provider
 CREATE TABLE storage_providers (
-    id BIGINT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     sp_id INT NOT NULL,
     operator_address TEXT NOT NULL,
     funding_address TEXT NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE storage_providers (
 CREATE INDEX idx_sp_id ON storage_providers (sp_id);
 -- global_virtual_group_families
 CREATE TABLE global_virtual_group_families (
-    id INT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     global_virtual_group_family_id INT NOT NULL,
     primary_sp_id INT NOT NULL,
     global_virtual_group_ids TEXT,
@@ -48,7 +48,7 @@ CREATE TABLE global_virtual_group_families (
 );
 -- global_virtual_groups
 CREATE TABLE global_virtual_groups (
-    id BIGINT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     global_virtual_group_id INT NOT NULL,
     family_id INT NOT NULL,
     primary_sp_id INT NOT NULL,
@@ -68,7 +68,7 @@ CREATE TABLE global_virtual_groups (
     CONSTRAINT fk_family_id FOREIGN KEY (family_id) REFERENCES global_virtual_group_families(global_virtual_group_family_id)
 );
 CREATE TABLE local_virtual_groups (
-    id BIGINT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     local_virtual_group_id INT NOT NULL,
     global_virtual_group_id INT NOT NULL,
     bucket_id INT NOT NULL,
