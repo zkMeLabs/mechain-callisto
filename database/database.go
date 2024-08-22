@@ -50,3 +50,20 @@ func Cast(db database.Database) *DB {
 	}
 	return bdDatabase
 }
+
+func (db *DB) ExecuteStatements(statements map[string][]interface{}) error {
+	tx := db.G.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+	for sql, vars := range statements {
+		if err := tx.Exec(sql, vars...).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+	return nil
+}

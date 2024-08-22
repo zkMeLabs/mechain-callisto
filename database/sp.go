@@ -25,6 +25,6 @@ func (db *DB) CreateStorageProviderToSQL(ctx context.Context, storageProvider *m
 }
 
 func (db *DB) UpdateStorageProviderToSQL(ctx context.Context, storageProvider *models.StorageProvider) (string, []interface{}) {
-	stat := db.G.Session(&gorm.Session{DryRun: true}).Table((&models.StorageProvider{}).TableName()).Where("sp_id = ? ", storageProvider.SpId).Updates(storageProvider).Statement
+	stat := db.G.Session(&gorm.Session{DryRun: true}).Table((&models.StorageProvider{}).TableName()).Where("sp_id = ? ", storageProvider.SpID).Updates(storageProvider).Statement
 	return stat.SQL.String(), stat.Vars
 }

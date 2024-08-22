@@ -16,6 +16,7 @@ type GlobalVirtualGroupFamily struct {
 	UpdateAt                   int64     `gorm:"column:update_at"`
 	UpdateTxHash               string    `gorm:"column:update_tx_hash;type:TEXT;not null"`
 	UpdateTime                 time.Time `gorm:"column:update_time"`
+	Removed                    bool      `gorm:"column:removed;default:false"`
 }
 
 func (*GlobalVirtualGroupFamily) TableName() string {

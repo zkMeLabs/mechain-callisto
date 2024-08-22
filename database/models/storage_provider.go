@@ -1,8 +1,6 @@
 package models
 
-import (
-	"math/big"
-)
+import "math/big"
 
 type StorageProvider struct {
 	ID              uint64  `gorm:"column:id;primaryKey"`

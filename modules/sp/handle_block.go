@@ -11,20 +11,23 @@ import (
 	"github.com/forbole/bdjuno/v4/database/models"
 	sptypes "github.com/forbole/bdjuno/v4/modules/sp/types"
 	vgtypes "github.com/forbole/bdjuno/v4/modules/virtualgroup/types"
-	"github.com/forbole/juno/v4/common"
 	junotypes "github.com/forbole/juno/v5/types"
 	"github.com/rs/zerolog/log"
 )
 
-const (
-	EventTypeCreateGroup  = "greenfield.storage.EventCreateGroup"
-	EventTypeDeleteGroup  = "greenfield.storage.EventDeleteGroup"
-	EventTypeCreateBucket = "greenfield.storage.EventCreateBucket"
-	EventTypeDeleteBucket = "greenfield.storage.EventDeleteBucket"
-	EventTypeCreateObject = "greenfield.storage.EventCreateObject"
-	EventTypeDeleteObject = "greenfield.storage.EventCancelCreateObject"
-	EventTypeEthereumTx   = "ethereum_tx"
+var (
+	EventCreateStorageProvider = proto.MessageName(&sptypes.EventCreateStorageProvider{})
+	EventEditStorageProvider   = proto.MessageName(&sptypes.EventEditStorageProvider{})
+	EventSpStoragePriceUpdate  = proto.MessageName(&sptypes.EventSpStoragePriceUpdate{})
+	EventCompleteSpExit        = proto.MessageName(&vgtypes.EventCompleteStorageProviderExit{})
 )
+
+var StorageProviderEvents = map[string]bool{
+	EventCreateStorageProvider: true,
+	EventEditStorageProvider:   true,
+	EventSpStoragePriceUpdate:  true,
+	EventCompleteSpExit:        true,
+}
 
 // HandleBlock implements modules.BlockModule
 func (m *Module) HandleBlock(
@@ -35,24 +38,7 @@ func (m *Module) HandleBlock(
 	if err != nil {
 		return err
 	}
-	return m.ExecuteStatements(statements)
-}
-
-func (m *Module) ExecuteStatements(statements map[string][]interface{}) error {
-	tx := m.db.G.Begin()
-	if tx.Error != nil {
-		return tx.Error
-	}
-	for sql, vars := range statements {
-		if err := tx.Exec(sql, vars...).Error; err != nil {
-			tx.Rollback()
-			return err
-		}
-	}
-	if err := tx.Commit().Error; err != nil {
-		return err
-	}
-	return nil
+	return m.db.ExecuteStatements(statements)
 }
 
 // ExportEventsInTxs accepts a slice of events in tx in order to save in database.
@@ -75,12 +61,7 @@ func (m Module) ExportEventsInTxs(ctx context.Context, block *tmctypes.ResultBlo
 func (m *Module) ExtractEvent(ctx context.Context, block *tmctypes.ResultBlock, tx *junotypes.Tx) (map[string][]interface{}, error) {
 	allSQL := make(map[string][]interface{})
 	for _, event := range tx.Events {
-		e := sdk.Event(event)
-		h := m.getExtractEventFunc(e)
-		if h == nil {
-			continue
-		}
-		sqls, err := h(ctx, block, tx.TxHash, e)
+		sqls, err := m.ExtractGroupEventStatements(ctx, block, tx.TxHash, sdk.Event(event))
 		if err != nil {
 			log.Err(err)
 			continue
@@ -92,29 +73,11 @@ func (m *Module) ExtractEvent(ctx context.Context, block *tmctypes.ResultBlock, 
 	return allSQL, nil
 }
 
-type ExtractFunc func(ctx context.Context, block *tmctypes.ResultBlock, txHash string, event sdk.Event) (map[string][]interface{}, error)
-
-func (m *Module) getExtractEventFunc(event sdk.Event) ExtractFunc {
-	if StorageProviderEvents[event.Type] {
-		return m.ExtractGroupEventStatements
-	}
-}
-
-var (
-	EventCreateStorageProvider = proto.MessageName(&sptypes.EventCreateStorageProvider{})
-	EventEditStorageProvider   = proto.MessageName(&sptypes.EventEditStorageProvider{})
-	EventSpStoragePriceUpdate  = proto.MessageName(&sptypes.EventSpStoragePriceUpdate{})
-	EventCompleteSpExit        = proto.MessageName(&vgtypes.EventCompleteStorageProviderExit{})
-)
-
-var StorageProviderEvents = map[string]bool{
-	EventCreateStorageProvider: true,
-	EventEditStorageProvider:   true,
-	EventSpStoragePriceUpdate:  true,
-	EventCompleteSpExit:        true,
-}
-
 func (m *Module) ExtractGroupEventStatements(ctx context.Context, block *tmctypes.ResultBlock, txHash string, event sdk.Event) (map[string][]interface{}, error) {
+	if !StorageProviderEvents[event.Type] {
+		return nil, nil
+	}
+
 	if !StorageProviderEvents[event.Type] {
 		return nil, nil
 	}
@@ -154,7 +117,7 @@ func (m *Module) ExtractGroupEventStatements(ctx context.Context, block *tmctype
 	return nil, nil
 }
 
-func (m *Module) handleCreateStorageProvider(ctx context.Context, block *tmctypes.ResultBlock, txHash common.Hash, createStorageProvider *sptypes.EventCreateStorageProvider) map[string][]interface{} {
+func (m *Module) handleCreateStorageProvider(ctx context.Context, block *tmctypes.ResultBlock, txHash string, createStorageProvider *sptypes.EventCreateStorageProvider) map[string][]interface{} {
 	storageProvider := &models.StorageProvider{
 		SpID:            createStorageProvider.SpId,
 		OperatorAddress: createStorageProvider.SpAddress,
@@ -162,7 +125,7 @@ func (m *Module) handleCreateStorageProvider(ctx context.Context, block *tmctype
 		SealAddress:     createStorageProvider.SealAddress,
 		ApprovalAddress: createStorageProvider.ApprovalAddress,
 		GcAddress:       createStorageProvider.GcAddress,
-		TotalDeposit:    (*common.Big)(createStorageProvider.TotalDeposit.Amount.BigInt()),
+		TotalDeposit:    *createStorageProvider.TotalDeposit.Amount.BigInt(),
 		Status:          createStorageProvider.Status.String(),
 		Endpoint:        createStorageProvider.Endpoint,
 		Moniker:         createStorageProvider.Description.Moniker,
@@ -210,13 +173,13 @@ func (m *Module) handleEditStorageProvider(ctx context.Context, block *tmctypes.
 	}
 }
 
-func (m *Module) handleSpStoragePriceUpdate(ctx context.Context, block *tmctypes.ResultBlock, txHash common.Hash, spStoragePriceUpdate *sptypes.EventSpStoragePriceUpdate) map[string][]interface{} {
+func (m *Module) handleSpStoragePriceUpdate(ctx context.Context, block *tmctypes.ResultBlock, txHash string, spStoragePriceUpdate *sptypes.EventSpStoragePriceUpdate) map[string][]interface{} {
 	storageProvider := &models.StorageProvider{
 		SpID:          spStoragePriceUpdate.SpId,
 		UpdateTimeSec: spStoragePriceUpdate.UpdateTimeSec,
-		ReadPrice:     (*common.Big)(spStoragePriceUpdate.ReadPrice.BigInt()),
+		ReadPrice:     *spStoragePriceUpdate.ReadPrice.BigInt(),
 		FreeReadQuota: spStoragePriceUpdate.FreeReadQuota,
-		StorePrice:    (*common.Big)(spStoragePriceUpdate.StorePrice.BigInt()),
+		StorePrice:    *spStoragePriceUpdate.StorePrice.BigInt(),
 
 		UpdateAt:     block.Block.Height,
 		UpdateTxHash: txHash,
@@ -229,7 +192,7 @@ func (m *Module) handleSpStoragePriceUpdate(ctx context.Context, block *tmctypes
 	}
 }
 
-func (m *Module) handleCompleteStorageProviderExit(ctx context.Context, block *tmctypes.ResultBlock, txHash common.Hash, completeStorageProviderExit *vgtypes.EventCompleteStorageProviderExit) map[string][]interface{} {
+func (m *Module) handleCompleteStorageProviderExit(ctx context.Context, block *tmctypes.ResultBlock, txHash string, completeStorageProviderExit *vgtypes.EventCompleteStorageProviderExit) map[string][]interface{} {
 	data := &models.StorageProvider{
 		SpID: completeStorageProviderExit.StorageProviderId,
 

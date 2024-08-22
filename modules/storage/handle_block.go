@@ -28,24 +28,7 @@ func (m *Module) HandleBlock(
 	if err != nil {
 		return err
 	}
-	return m.ExecuteStatements(statements)
-}
-
-func (m *Module) ExecuteStatements(statements map[string][]interface{}) error {
-	tx := m.db.G.Begin()
-	if tx.Error != nil {
-		return tx.Error
-	}
-	for sql, vars := range statements {
-		if err := tx.Exec(sql, vars...).Error; err != nil {
-			tx.Rollback()
-			return err
-		}
-	}
-	if err := tx.Commit().Error; err != nil {
-		return err
-	}
-	return nil
+	return m.db.ExecuteStatements(statements)
 }
 
 // ExportEventsInTxs accepts a slice of events in tx in order to save in database.
