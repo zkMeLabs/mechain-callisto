@@ -2,6 +2,7 @@ package source
 
 import (
 	permission "github.com/forbole/bdjuno/v4/modules/storage/permission"
+	sp "github.com/forbole/bdjuno/v4/modules/storage/sp"
 	"github.com/forbole/bdjuno/v4/modules/storage/types"
 	virtualgroup "github.com/forbole/bdjuno/v4/modules/storage/virtualgroup"
 )
@@ -21,4 +22,6 @@ type Source interface {
 	GlobalVirtualGroup(height int64, globalVirtualGroupId uint32) (virtualgroup.GlobalVirtualGroup, error)
 	GlobalVirtualGroupByFamilyID(height int64, globalVirtualGroupFamilyId uint32) ([]*virtualgroup.GlobalVirtualGroup, error)
 	GlobalVirtualGroupFamily(height int64, familyId uint32) (virtualgroup.GlobalVirtualGroupFamily, error)
+
+	StorageProvider(height int64, id uint32) (sp.StorageProvider, error)
 }

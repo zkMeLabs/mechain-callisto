@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	sp "github.com/forbole/bdjuno/v4/modules/storage/sp"
 	"os"
 
 	inflationtypes "github.com/evmos/evmos/v14/x/inflation/types"
@@ -133,6 +134,11 @@ func buildRemoteSources(cfg *remote.Details) (*Sources, error) {
 		MintSource:      remotemintsource.NewSource(source, minttypes.NewQueryClient(source.GrpcConn)),
 		SlashingSource:  remoteslashingsource.NewSource(source, slashingtypes.NewQueryClient(source.GrpcConn)),
 		StakingSource:   remotestakingsource.NewSource(source, stakingtypes.NewQueryClient(source.GrpcConn)),
-		StorageSource:   remotestoragesource.NewSource(source, storagetypes.NewQueryClient(source.GrpcConn), virtualgroup.NewQueryClient(source.GrpcConn)),
+		StorageSource: remotestoragesource.NewSource(
+			source,
+			storagetypes.NewQueryClient(source.GrpcConn),
+			virtualgroup.NewQueryClient(source.GrpcConn),
+			sp.NewQueryClient(source.GrpcConn),
+		),
 	}, nil
 }

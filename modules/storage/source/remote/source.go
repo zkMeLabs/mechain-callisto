@@ -2,11 +2,11 @@ package remote
 
 import (
 	permission "github.com/forbole/bdjuno/v4/modules/storage/permission"
+	storagesource "github.com/forbole/bdjuno/v4/modules/storage/source"
+	sp "github.com/forbole/bdjuno/v4/modules/storage/sp"
 	types "github.com/forbole/bdjuno/v4/modules/storage/types"
 	virtualgroup "github.com/forbole/bdjuno/v4/modules/storage/virtualgroup"
 	"github.com/forbole/juno/v5/node/remote"
-
-	storagesource "github.com/forbole/bdjuno/v4/modules/storage/source"
 )
 
 var (
@@ -18,14 +18,16 @@ type Source struct {
 	*remote.Source
 	storageClient      types.QueryClient
 	virtualGroupClient virtualgroup.QueryClient
+	spClient           sp.QueryClient
 }
 
 // NewSource returns a new Source implementation
-func NewSource(source *remote.Source, storageClient types.QueryClient, virtualGroupClient virtualgroup.QueryClient) *Source {
+func NewSource(source *remote.Source, storageClient types.QueryClient, virtualGroupClient virtualgroup.QueryClient, spClient sp.QueryClient) *Source {
 	return &Source{
 		Source:             source,
 		storageClient:      storageClient,
 		virtualGroupClient: virtualGroupClient,
+		spClient:           spClient,
 	}
 }
 
@@ -167,4 +169,16 @@ func (s Source) GlobalVirtualGroupFamily(height int64, familyId uint32) (virtual
 	}
 
 	return *res.GlobalVirtualGroupFamily, nil
+}
+
+func (s Source) StorageProvider(height int64, id uint32) (sp.StorageProvider, error) {
+	res, err := s.spClient.StorageProvider(
+		remote.GetHeightRequestContext(s.Ctx, height),
+		&sp.QueryStorageProviderRequest{Id: id},
+	)
+	if err != nil {
+		return sp.StorageProvider{}, err
+	}
+
+	return *res.StorageProvider, nil
 }
