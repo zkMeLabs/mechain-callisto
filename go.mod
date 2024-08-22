@@ -15,7 +15,7 @@ require (
 	github.com/forbole/juno/v5 v5.2.1-0.20230828165233-507db5ddc83d
 	github.com/go-co-op/gocron v1.33.1
 	github.com/gogo/protobuf v1.3.2
-	github.com/jmoiron/sqlx v1.3.5
+	github.com/jmoiron/sqlx v1.4.0
 	github.com/lib/pq v1.10.9
 	github.com/pelletier/go-toml v1.9.5
 	github.com/prometheus/client_golang v1.16.0
