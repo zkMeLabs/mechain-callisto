@@ -16,6 +16,7 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	storagetypes "github.com/forbole/bdjuno/v4/modules/storage/types"
+	virtualgroup "github.com/forbole/bdjuno/v4/modules/storage/virtualgroup"
 	"github.com/forbole/juno/v5/node/local"
 
 	"cosmossdk.io/simapp/params"
@@ -132,6 +133,6 @@ func buildRemoteSources(cfg *remote.Details) (*Sources, error) {
 		MintSource:      remotemintsource.NewSource(source, minttypes.NewQueryClient(source.GrpcConn)),
 		SlashingSource:  remoteslashingsource.NewSource(source, slashingtypes.NewQueryClient(source.GrpcConn)),
 		StakingSource:   remotestakingsource.NewSource(source, stakingtypes.NewQueryClient(source.GrpcConn)),
-		StorageSource:   remotestoragesource.NewSource(source, storagetypes.NewQueryClient(source.GrpcConn)),
+		StorageSource:   remotestoragesource.NewSource(source, storagetypes.NewQueryClient(source.GrpcConn), virtualgroup.NewQueryClient(source.GrpcConn)),
 	}, nil
 }

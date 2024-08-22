@@ -3,7 +3,7 @@ package source
 import (
 	permission "github.com/forbole/bdjuno/v4/modules/storage/permission"
 	"github.com/forbole/bdjuno/v4/modules/storage/types"
-	vitualgroup "github.com/forbole/bdjuno/v4/modules/storage/vitualgroup"
+	virtualgroup "github.com/forbole/bdjuno/v4/modules/storage/virtualgroup"
 )
 
 type Source interface {
@@ -14,7 +14,11 @@ type Source interface {
 	HeadGroup(height int64, groupOwner, groupName string) (types.GroupInfo, error)
 	HeadGroupMember(height int64, member, groupOwner, groupName string) (permission.GroupMember, error)
 
-	HeadObject(height int64, bucketName, objectName string) (types.ObjectInfo, vitualgroup.GlobalVirtualGroup, error)
-	HeadObjectById(height int64, objectId string) (types.ObjectInfo, vitualgroup.GlobalVirtualGroup, error)
+	HeadObject(height int64, bucketName, objectName string) (types.ObjectInfo, virtualgroup.GlobalVirtualGroup, error)
+	HeadObjectById(height int64, objectId string) (types.ObjectInfo, virtualgroup.GlobalVirtualGroup, error)
 	HeadShadowObject(height int64, bucketName, objectName string) (types.ShadowObjectInfo, error)
+
+	GlobalVirtualGroup(height int64, globalVirtualGroupId uint32) (virtualgroup.GlobalVirtualGroup, error)
+	GlobalVirtualGroupByFamilyID(height int64, globalVirtualGroupFamilyId uint32) ([]*virtualgroup.GlobalVirtualGroup, error)
+	GlobalVirtualGroupFamily(height int64, familyId uint32) (virtualgroup.GlobalVirtualGroupFamily, error)
 }
