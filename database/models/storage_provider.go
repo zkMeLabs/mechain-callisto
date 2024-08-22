@@ -25,8 +25,10 @@ type StorageProvider struct {
 	StorePrice      big.Int `gorm:"column:store_price"`
 	CreateAt        int64   `gorm:"column:create_at"`
 	CreateTxHash    string  `gorm:"column:create_tx_hash;type:TEXT;not null"`
+	CreateEVMTxHash string  `gorm:"column:create_evm_tx_hash;type:TEXT;not null"`
 	UpdateAt        int64   `gorm:"column:update_at"`
 	UpdateTxHash    string  `gorm:"column:update_tx_hash;type:TEXT;not null"`
+	UpdateEVMTxHash string  `gorm:"column:update_evm_tx_hash;type:TEXT;not null"`
 	Removed         bool    `gorm:"column:removed;default:false"`
 }
 

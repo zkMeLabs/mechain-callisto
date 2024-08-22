@@ -19,9 +19,11 @@ CREATE TABLE buckets (
     charge_size DECIMAL(65, 0) NOT NULL,
     create_at BIGINT,
     create_tx_hash TEXT NOT NULL,
+    create_evm_tx_hash TEXT NOT NULL,
     create_time TIMESTAMPTZ,
     update_at BIGINT,
     update_tx_hash TEXT NOT NULL,
+    update_evm_tx_hash TEXT NOT NULL,
     update_time TIMESTAMPTZ,
     removed BOOLEAN DEFAULT FALSE,
     off_chain_status INT NOT NULL DEFAULT 0,
@@ -54,10 +56,13 @@ CREATE TABLE objects (
     delete_reason TEXT,
     create_at BIGINT,
     create_tx_hash TEXT NOT NULL,
+    create_evm_tx_hash TEXT NOT NULL,
     create_time TIMESTAMPTZ,
     update_at BIGINT,
     update_tx_hash TEXT NOT NULL,
+    update_evm_tx_hash TEXT NOT NULL,
     sealed_tx_hash TEXT,
+    sealed_evm_tx_hash TEXT NOT NULL,
     update_time TIMESTAMPTZ,
     removed BOOLEAN DEFAULT FALSE,
     tags JSONB,
@@ -84,8 +89,12 @@ CREATE TABLE groups (
     expiration_time TIMESTAMPTZ,
     create_at BIGINT,
     create_time TIMESTAMPTZ,
+    create_tx_hash TEXT NOT NULL,
+    create_evm_tx_hash TEXT NOT NULL,
     update_at BIGINT,
     update_time TIMESTAMPTZ,
+    update_tx_hash TEXT NOT NULL,
+    update_evm_tx_hash TEXT NOT NULL,
     removed BOOLEAN DEFAULT FALSE,
     tags JSONB,
     UNIQUE (group_id)
@@ -121,3 +130,15 @@ CREATE TABLE permission (
     )
 );
 CREATE INDEX idx_policy_id ON permission (policy_id);
+-- events table
+CREATE TABLE events (
+    id SERIAL PRIMARY KEY,
+    resource_type TEXT NOT NULL,
+    resource_id INT NOT NULL,
+    height BIGINT NOT NULL,
+    tx_hash TEXT NOT NULL,
+    evm_tx_hash TEXT NOT NULL,
+    action INT NOT NULL
+);
+CREATE INDEX idx_event_tx_hash ON events (tx_hash);
+CREATE INDEX idx_event_evm_tx_hash ON events (evm_tx_hash);

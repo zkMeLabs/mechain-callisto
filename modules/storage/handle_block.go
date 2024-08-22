@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 
+	abci "github.com/cometbft/cometbft/abci/types"
 	tmctypes "github.com/cometbft/cometbft/rpc/core/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	junotypes "github.com/forbole/juno/v5/types"
@@ -49,6 +50,8 @@ func (m Module) ExportEventsInTxs(ctx context.Context, block *tmctypes.ResultBlo
 
 // ExtractEvent accepts the transaction and handles events contained inside the transaction.
 func (m *Module) ExtractEvent(ctx context.Context, block *tmctypes.ResultBlock, tx *junotypes.Tx) (map[string][]interface{}, error) {
+	txHash := tx.TxHash
+	evmTxHash := findEVMTxHash(tx.Events)
 	allSQL := make(map[string][]interface{})
 	for _, event := range tx.Events {
 		e := sdk.Event(event)
@@ -56,7 +59,7 @@ func (m *Module) ExtractEvent(ctx context.Context, block *tmctypes.ResultBlock, 
 		if h == nil {
 			continue
 		}
-		sqls, err := h(ctx, block, tx.TxHash, e)
+		sqls, err := h(ctx, block, txHash, evmTxHash, e)
 		if err != nil {
 			log.Err(err)
 			continue
@@ -68,7 +71,7 @@ func (m *Module) ExtractEvent(ctx context.Context, block *tmctypes.ResultBlock, 
 	return allSQL, nil
 }
 
-type ExtractFunc func(ctx context.Context, block *tmctypes.ResultBlock, txHash string, event sdk.Event) (map[string][]interface{}, error)
+type ExtractFunc func(ctx context.Context, block *tmctypes.ResultBlock, txHash, evmTxHash string, event sdk.Event) (map[string][]interface{}, error)
 
 func (m *Module) getExtractEventFunc(event sdk.Event) ExtractFunc {
 	if BucketEvents[event.Type] {
@@ -81,4 +84,18 @@ func (m *Module) getExtractEventFunc(event sdk.Event) ExtractFunc {
 		return m.ExtractGroupEventStatements
 	}
 	return nil
+}
+
+func findEVMTxHash(events []abci.Event) string {
+	for _, event := range events {
+		if event.Type != EventTypeEthereumTx {
+			continue
+		}
+		for _, att := range event.Attributes {
+			if att.Key == "ethereumTxHash" {
+				return att.Value
+			}
+		}
+	}
+	return ""
 }

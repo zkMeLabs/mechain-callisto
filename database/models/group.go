@@ -18,8 +18,12 @@ type Group struct {
 	ExpirationTime  time.Time      `gorm:"column:expiration_time"`
 	CreateAt        int64          `gorm:"column:create_at"`
 	CreateTime      time.Time      `gorm:"column:create_time"`
+	CreateTxHash    string         `gorm:"column:create_tx_hash;type:TEXT;not null"`
+	CreateEVMTxHash string         `gorm:"column:create_evm_tx_hash;type:TEXT;not null"`
 	UpdateAt        int64          `gorm:"column:update_at"`
 	UpdateTime      time.Time      `gorm:"column:update_time"`
+	UpdateTxHash    string         `gorm:"column:update_tx_hash;type:TEXT;not null"`
+	UpdateEVMTxHash string         `gorm:"column:update_evm_tx_hash;type:TEXT;not null"`
 	Removed         bool           `gorm:"column:removed;default:false"`
 	Tags            datatypes.JSON `gorm:"column:tags;type:JSON"`
 }

@@ -29,7 +29,7 @@ var GroupEvents = map[string]bool{
 	EventRenewGroupMember:  true,
 }
 
-func (m *Module) ExtractGroupEventStatements(ctx context.Context, block *tmctypes.ResultBlock, txHash string, event sdk.Event) (map[string][]interface{}, error) {
+func (m *Module) ExtractGroupEventStatements(ctx context.Context, block *tmctypes.ResultBlock, txHash, evmTxHash string, event sdk.Event) (map[string][]interface{}, error) {
 	typedEvent, err := sdk.ParseTypedEvent(abci.Event(event))
 	if err != nil {
 		return nil, err
@@ -41,51 +41,52 @@ func (m *Module) ExtractGroupEventStatements(ctx context.Context, block *tmctype
 		if !ok {
 			return nil, errors.New("create group event assert error")
 		}
-		return m.handleCreateGroup(ctx, block, createGroup), nil
+		return m.handleCreateGroup(ctx, block, txHash, evmTxHash, createGroup), nil
 	case EventUpdateGroupMember:
 		updateGroupMember, ok := typedEvent.(*storagetypes.EventUpdateGroupMember)
 		if !ok {
 			return nil, errors.New("update group member event assert error")
 		}
-		return m.handleUpdateGroupMember(ctx, block, updateGroupMember), nil
-
+		return m.handleUpdateGroupMember(ctx, block, txHash, evmTxHash, updateGroupMember), nil
 	case EventDeleteGroup:
 		deleteGroup, ok := typedEvent.(*storagetypes.EventDeleteGroup)
 		if !ok {
 			return nil, errors.New("delete group event assert error")
 		}
-		return m.handleDeleteGroup(ctx, block, deleteGroup), nil
+		return m.handleDeleteGroup(ctx, block, txHash, evmTxHash, deleteGroup), nil
 	case EventLeaveGroup:
 		leaveGroup, ok := typedEvent.(*storagetypes.EventLeaveGroup)
 		if !ok {
 			return nil, errors.New("leave group event assert error")
 		}
-		return m.handleLeaveGroup(ctx, block, leaveGroup), nil
+		return m.handleLeaveGroup(ctx, block, txHash, evmTxHash, leaveGroup), nil
 	case EventRenewGroupMember:
 		renewGroupMember, ok := typedEvent.(*storagetypes.EventRenewGroupMember)
 		if !ok {
 			return nil, errors.New("renew group member event assert error")
 		}
-		return m.handleRenewGroupMember(ctx, block, renewGroupMember), nil
+		return m.handleRenewGroupMember(ctx, block, txHash, evmTxHash, renewGroupMember), nil
 	}
 	return nil, nil
 }
 
-func (m *Module) handleCreateGroup(ctx context.Context, block *tmctypes.ResultBlock, createGroup *storagetypes.EventCreateGroup) map[string][]interface{} {
+func (m *Module) handleCreateGroup(ctx context.Context, block *tmctypes.ResultBlock, txHash, evmTxHash string, createGroup *storagetypes.EventCreateGroup) map[string][]interface{} {
 	var membersToAddList []*models.Group
-
-	// create group first
 	groupItem := &models.Group{
-		OwnerAddress: createGroup.Owner,
-		GroupID:      createGroup.GroupId.BigInt().String(),
-		GroupName:    createGroup.GroupName,
-		SourceType:   createGroup.SourceType.String(),
-		Extra:        createGroup.Extra,
-		CreateAt:     block.Block.Height,
-		CreateTime:   block.Block.Time,
-		UpdateAt:     block.Block.Height,
-		UpdateTime:   block.Block.Time,
-		Removed:      false,
+		OwnerAddress:    createGroup.Owner,
+		GroupID:         createGroup.GroupId.BigInt().String(),
+		GroupName:       createGroup.GroupName,
+		SourceType:      createGroup.SourceType.String(),
+		Extra:           createGroup.Extra,
+		CreateAt:        block.Block.Height,
+		CreateTxHash:    txHash,
+		CreateEVMTxHash: evmTxHash,
+		CreateTime:      block.Block.Time,
+		UpdateAt:        block.Block.Height,
+		UpdateTime:      block.Block.Time,
+		UpdateTxHash:    txHash,
+		UpdateEVMTxHash: evmTxHash,
+		Removed:         false,
 	}
 	membersToAddList = append(membersToAddList, groupItem)
 	k, v := m.db.CreateGroupToSQL(ctx, membersToAddList)
@@ -94,14 +95,16 @@ func (m *Module) handleCreateGroup(ctx context.Context, block *tmctypes.ResultBl
 	}
 }
 
-func (m *Module) handleDeleteGroup(ctx context.Context, block *tmctypes.ResultBlock, deleteGroup *storagetypes.EventDeleteGroup) map[string][]interface{} {
+func (m *Module) handleDeleteGroup(ctx context.Context, block *tmctypes.ResultBlock, txHash, evmTxHash string, deleteGroup *storagetypes.EventDeleteGroup) map[string][]interface{} {
 	group := &models.Group{
-		OwnerAddress: deleteGroup.Owner,
-		GroupID:      deleteGroup.GroupId.BigInt().String(),
-		GroupName:    deleteGroup.GroupName,
-		UpdateAt:     block.Block.Height,
-		UpdateTime:   block.Block.Time,
-		Removed:      true,
+		OwnerAddress:    deleteGroup.Owner,
+		GroupID:         deleteGroup.GroupId.BigInt().String(),
+		GroupName:       deleteGroup.GroupName,
+		UpdateAt:        block.Block.Height,
+		UpdateTime:      block.Block.Time,
+		UpdateTxHash:    txHash,
+		UpdateEVMTxHash: evmTxHash,
+		Removed:         true,
 	}
 	res := make(map[string][]interface{})
 	k, v := m.db.DeleteGroupToSQL(ctx, group)
@@ -109,15 +112,17 @@ func (m *Module) handleDeleteGroup(ctx context.Context, block *tmctypes.ResultBl
 	return res
 }
 
-func (m *Module) handleLeaveGroup(ctx context.Context, block *tmctypes.ResultBlock, leaveGroup *storagetypes.EventLeaveGroup) map[string][]interface{} {
+func (m *Module) handleLeaveGroup(ctx context.Context, block *tmctypes.ResultBlock, txHash, evmTxHash string, leaveGroup *storagetypes.EventLeaveGroup) map[string][]interface{} {
 	group := &models.Group{
-		OwnerAddress:   leaveGroup.Owner,
-		GroupID:        leaveGroup.GroupId.BigInt().String(),
-		GroupName:      leaveGroup.GroupName,
-		AccountAddress: leaveGroup.MemberAddress,
-		UpdateAt:       block.Block.Height,
-		UpdateTime:     block.Block.Time,
-		Removed:        true,
+		OwnerAddress:    leaveGroup.Owner,
+		GroupID:         leaveGroup.GroupId.BigInt().String(),
+		GroupName:       leaveGroup.GroupName,
+		AccountAddress:  leaveGroup.MemberAddress,
+		UpdateAt:        block.Block.Height,
+		UpdateTime:      block.Block.Time,
+		UpdateTxHash:    txHash,
+		UpdateEVMTxHash: evmTxHash,
+		Removed:         true,
 	}
 
 	// update group item
@@ -136,7 +141,7 @@ func (m *Module) handleLeaveGroup(ctx context.Context, block *tmctypes.ResultBlo
 	return res
 }
 
-func (m *Module) handleUpdateGroupMember(ctx context.Context, block *tmctypes.ResultBlock, updateGroupMember *storagetypes.EventUpdateGroupMember) map[string][]interface{} {
+func (m *Module) handleUpdateGroupMember(ctx context.Context, block *tmctypes.ResultBlock, txHash, evmTxHash string, updateGroupMember *storagetypes.EventUpdateGroupMember) map[string][]interface{} {
 	membersToAdd := updateGroupMember.MembersToAdd
 	membersToDelete := updateGroupMember.MembersToDelete
 
@@ -153,8 +158,12 @@ func (m *Module) handleUpdateGroupMember(ctx context.Context, block *tmctypes.Re
 				OperatorAddress: updateGroupMember.Operator,
 				CreateAt:        block.Block.Height,
 				CreateTime:      block.Block.Time,
+				CreateTxHash:    txHash,
+				CreateEVMTxHash: evmTxHash,
 				UpdateAt:        block.Block.Height,
 				UpdateTime:      block.Block.Time,
+				UpdateTxHash:    txHash,
+				UpdateEVMTxHash: evmTxHash,
 				Removed:         false,
 			}
 			if memberToAdd.ExpirationTime != nil {
@@ -171,6 +180,8 @@ func (m *Module) handleUpdateGroupMember(ctx context.Context, block *tmctypes.Re
 			OperatorAddress: updateGroupMember.Operator,
 			UpdateAt:        block.Block.Height,
 			UpdateTime:      block.Block.Time,
+			UpdateTxHash:    txHash,
+			UpdateEVMTxHash: evmTxHash,
 			Removed:         true,
 		}
 		accountAddresses := make([]string, 0, len(membersToDelete))
@@ -183,10 +194,12 @@ func (m *Module) handleUpdateGroupMember(ctx context.Context, block *tmctypes.Re
 
 	// update group item
 	groupItem := &models.Group{
-		GroupID:    updateGroupMember.GroupId.BigInt().String(),
-		UpdateAt:   block.Block.Height,
-		UpdateTime: block.Block.Time,
-		Removed:    false,
+		GroupID:         updateGroupMember.GroupId.BigInt().String(),
+		UpdateAt:        block.Block.Height,
+		UpdateTime:      block.Block.Time,
+		UpdateTxHash:    txHash,
+		UpdateEVMTxHash: evmTxHash,
+		Removed:         false,
 	}
 	k, v := m.db.UpdateGroupToSQL(ctx, groupItem)
 	res[k] = v
@@ -194,7 +207,7 @@ func (m *Module) handleUpdateGroupMember(ctx context.Context, block *tmctypes.Re
 	return res
 }
 
-func (m *Module) handleRenewGroupMember(ctx context.Context, block *tmctypes.ResultBlock, renewGroupMember *storagetypes.EventRenewGroupMember) map[string][]interface{} {
+func (m *Module) handleRenewGroupMember(ctx context.Context, block *tmctypes.ResultBlock, txHash, evmTxHash string, renewGroupMember *storagetypes.EventRenewGroupMember) map[string][]interface{} {
 	res := map[string][]interface{}{}
 	for _, e := range renewGroupMember.Members {
 		expirationTime := int64(0)

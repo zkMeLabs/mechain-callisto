@@ -25,8 +25,8 @@ function start() {
     ${bin} --home "${basedir}" parse genesis-file --genesis-file-path ./genesis.json
 
     echo "run BDjuno...."
-    # nohup "${bin}" start --home "${basedir}" >"${basedir}"/bdjuno.log 2>&1 &
-    "${bin}" --home "${basedir}" start >"${basedir}"/bdjuno.log
+    nohup "${bin}" start --home "${basedir}" >"${basedir}"/bdjuno.log 2>&1 &
+    # "${bin}" --home "${basedir}" start >"${basedir}"/bdjuno.log
 }
 
 cmd=$1

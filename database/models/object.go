@@ -27,10 +27,13 @@ type Object struct {
 	DeleteReason        string         `gorm:"column:delete_reason;type:VARCHAR(256)"`
 	CreateAt            int64          `gorm:"column:create_at"`
 	CreateTxHash        string         `gorm:"column:create_tx_hash;type:TEXT;not null"`
+	CreateEVMTxHash     string         `gorm:"column:create_evm_tx_hash;type:TEXT;not null"`
 	CreateTime          time.Time      `gorm:"column:create_time"`
 	UpdateAt            int64          `gorm:"column:update_at;index:idx_update_at"`
 	UpdateTxHash        string         `gorm:"column:update_tx_hash;type:TEXT;not null"`
+	UpdateEVMTxHash     string         `gorm:"column:update_evm_tx_hash;type:TEXT;not null"`
 	SealedTxHash        string         `gorm:"column:sealed_tx_hash;type:TEXT"`
+	SealedEvmTxHash     string         `gorm:"column:sealed_evm_tx_hash;type:TEXT"`
 	UpdateTime          time.Time      `gorm:"column:update_time"`
 	Removed             bool           `gorm:"column:removed;default:false"`
 	Tags                datatypes.JSON `gorm:"column:tags;type:JSON"`

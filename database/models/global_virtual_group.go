@@ -16,9 +16,11 @@ type GlobalVirtualGroup struct {
 	TotalDeposit          big.Int   `gorm:"column:total_deposit"`
 	CreateAt              int64     `gorm:"column:create_at"`
 	CreateTxHash          string    `gorm:"column:create_tx_hash;type:TEXT;not null"`
+	CreateEVMTxHash       string    `gorm:"column:create_evm_tx_hash;type:TEXT;not null"`
 	CreateTime            time.Time `gorm:"column:create_time"`
 	UpdateAt              int64     `gorm:"column:update_at"`
 	UpdateTxHash          string    `gorm:"column:update_tx_hash;type:TEXT;not null"`
+	UpdateEVMTxHash       string    `gorm:"column:update_evm_tx_hash;type:TEXT;not null"`
 	UpdateTime            time.Time `gorm:"column:update_time"`
 	Removed               bool      `gorm:"column:removed;default:false"`
 }
