@@ -1,5 +1,4 @@
 INSERT INTO buckets (
-        id,
         bucket_id,
         bucket_name,
         owner_address,
@@ -28,7 +27,6 @@ INSERT INTO buckets (
     )
 VALUES (
         1,
-        1,
         'bucket1',
         '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
         '0xabcdefabcdefabcdefabcdefabcdefabcdef',
@@ -55,7 +53,6 @@ VALUES (
         '{"key": "value"}'
     ),
     (
-        2,
         2,
         'bucket2',
         '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
@@ -84,7 +81,6 @@ VALUES (
     ),
     (
         3,
-        3,
         'bucket3',
         '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
         '0xabcdefabcdefabcdefabcdefabcdefabcdef',
@@ -111,7 +107,6 @@ VALUES (
         '{"key": "value"}'
     ),
     (
-        4,
         4,
         'bucket4',
         '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
@@ -140,7 +135,6 @@ VALUES (
     ),
     (
         5,
-        5,
         'bucket5',
         '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
         '0xabcdefabcdefabcdefabcdefabcdefabcdef',
@@ -167,7 +161,6 @@ VALUES (
         '{"key": "value"}'
     ),
     (
-        6,
         6,
         'bucket6',
         '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
@@ -196,7 +189,6 @@ VALUES (
     ),
     (
         7,
-        7,
         'bucket7',
         '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
         '0xabcdefabcdefabcdefabcdefabcdefabcdef',
@@ -224,7 +216,6 @@ VALUES (
     ),
     (
         8,
-        8,
         'bucket8',
         '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
         '0xabcdefabcdefabcdefabcdefabcdefabcdef',
@@ -251,9 +242,8 @@ VALUES (
         '{"key": "value"}'
     ),
     (
-        9,
-        9,
-        'bucket9',
+        16,
+        'bucket16',
         '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
         '0xabcdefabcdefabcdefabcdefabcdefabcdef',
         2,
@@ -274,34 +264,6 @@ VALUES (
         '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
         '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
         '2023-08-18 20:00:00+00',
-        FALSE,
-        0,
-        '{"key": "value"}'
-    ),
-    (
-        10,
-        10,
-        'bucket10',
-        '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
-        '0xabcdefabcdefabcdefabcdefabcdefabcdef',
-        1,
-        '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
-        'typeJ',
-        100000,
-        'private',
-        'inactive',
-        NULL,
-        NULL,
-        10000000,
-        10000000,
-        1620000009,
-        '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
-        '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
-        '2023-08-17 21:00:00+00',
-        1620000009,
-        '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
-        '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
-        '2023-08-18 21:00:00+00',
         FALSE,
         0,
         '{"key": "value"}'

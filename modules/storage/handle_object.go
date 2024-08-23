@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"encoding/hex"
 	"errors"
 	"strings"
 	"time"
@@ -12,6 +13,7 @@ import (
 	"github.com/cosmos/gogoproto/proto"
 	"github.com/forbole/bdjuno/v4/database/models"
 	storagetypes "github.com/forbole/bdjuno/v4/modules/storage/types"
+	"github.com/lib/pq"
 )
 
 var (
@@ -119,12 +121,12 @@ func (m *Module) ExtractObjectEventStatements(ctx context.Context, block *tmctyp
 	return nil, nil
 }
 
-func convertByteArrayToStrArray(ba [][]byte) []string {
-	sa := make([]string, len(ba))
-	for i, b := range ba {
-		sa[i] = string(b)
+func ByteArrayToPqArray(ba [][]byte) pq.StringArray {
+	pqArray := pq.StringArray{}
+	for _, b := range ba {
+		pqArray = append(pqArray, hex.EncodeToString(b))
 	}
-	return sa
+	return pqArray
 }
 
 func (m *Module) handleCreateObject(ctx context.Context, block *tmctypes.ResultBlock, txHash, evmTxHash string, createObject *storagetypes.EventCreateObject) map[string][]interface{} {
@@ -141,7 +143,7 @@ func (m *Module) handleCreateObject(ctx context.Context, block *tmctypes.ResultB
 		Status:          createObject.Status.String(),
 		RedundancyType:  createObject.RedundancyType.String(),
 		SourceType:      createObject.SourceType.String(),
-		CheckSums:       convertByteArrayToStrArray(createObject.Checksums),
+		CheckSums:       ByteArrayToPqArray(createObject.Checksums),
 		CreateTxHash:    txHash,
 		CreateEVMTxHash: evmTxHash,
 		CreateAt:        block.Block.Height,
@@ -171,7 +173,7 @@ func (m *Module) handleSealObject(ctx context.Context, block *tmctypes.ResultBlo
 		Status:              sealObject.Status.String(),
 		SealedTxHash:        txHash,
 		SealedEvmTxHash:     evmTxHash,
-		CheckSums:           convertByteArrayToStrArray(sealObject.GetChecksums()),
+		CheckSums:           ByteArrayToPqArray(sealObject.GetChecksums()),
 		UpdateAt:            block.Block.Height,
 		UpdateTxHash:        txHash,
 		UpdateTime:          block.Block.Time,
@@ -371,10 +373,10 @@ func (m *Module) handleUpdateObjectContentSuccess(ctx context.Context, block *tm
 		UpdateTime:         block.Block.Time,
 		ContentType:        updateObject.ContentType,
 		IsUpdating:         false,
-		ContentUpdatedTime: updateObject.UpdatedAt,
+		ContentUpdatedTime: time.Unix(updateObject.UpdatedAt, 0),
 		Updater:            updateObject.Operator,
 		PayloadSize:        updateObject.NewPayloadSize,
-		CheckSums:          convertByteArrayToStrArray(updateObject.NewChecksums),
+		CheckSums:          ByteArrayToPqArray(updateObject.NewChecksums),
 		Version:            updateObject.Version,
 	}
 	res := make(map[string][]interface{})
@@ -401,8 +403,7 @@ func (m *Module) handleCancelUpdateObjectContent(ctx context.Context, block *tmc
 		UpdateTxHash:    txHash,
 		UpdateEVMTxHash: evmTxHash,
 		UpdateTime:      block.Block.Time,
-
-		IsUpdating: false,
+		IsUpdating:      false,
 	}
 	res := make(map[string][]interface{})
 	k, v := m.db.UpdateObjectToSQL(ctx, object)

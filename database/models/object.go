@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/lib/pq"
 	"gorm.io/datatypes"
 )
 
@@ -22,7 +23,7 @@ type Object struct {
 	Status              string         `gorm:"column:status;type:VARCHAR(50)"`
 	RedundancyType      string         `gorm:"column:redundancy_type;type:VARCHAR(50)"`
 	SourceType          string         `gorm:"column:source_type;type:VARCHAR(50)"`
-	CheckSums           []string       `gorm:"column:checksums;type:TEXT[]"`
+	CheckSums           pq.StringArray `gorm:"column:checksums;type:TEXT[]"`
 	DeleteAt            int64          `gorm:"column:delete_at"`
 	DeleteReason        string         `gorm:"column:delete_reason;type:VARCHAR(256)"`
 	CreateAt            int64          `gorm:"column:create_at"`
@@ -38,7 +39,7 @@ type Object struct {
 	Removed             bool           `gorm:"column:removed;default:false"`
 	Tags                datatypes.JSON `gorm:"column:tags;type:JSON"`
 	IsUpdating          bool           `gorm:"column:is_updating"`
-	ContentUpdatedTime  int64          `gorm:"column:content_updated_time"`
+	ContentUpdatedTime  time.Time      `gorm:"column:content_updated_time"`
 	Updater             string         `gorm:"column:updater;type:TEXT"`
 	Version             int64          `gorm:"column:version"`
 }
