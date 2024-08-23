@@ -4,29 +4,19 @@ import (
 	"fmt"
 	"os"
 
-	sptypes "github.com/forbole/bdjuno/v4/modules/sp/types"
-
-	inflationtypes "github.com/evmos/evmos/v14/x/inflation/types"
-
-	"github.com/forbole/juno/v5/node/remote"
-
+	"cosmossdk.io/simapp/params"
+	"github.com/cometbft/cometbft/libs/log"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	storagetypes "github.com/forbole/bdjuno/v4/modules/storage/types"
-	vgtypes "github.com/forbole/bdjuno/v4/modules/virtualgroup/types"
-	"github.com/forbole/juno/v5/node/local"
-
-	"cosmossdk.io/simapp/params"
-	"github.com/cometbft/cometbft/libs/log"
-
-	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	evmosapp "github.com/evmos/evmos/v14/app"
+	inflationtypes "github.com/evmos/evmos/v14/x/inflation/types"
 	banksource "github.com/forbole/bdjuno/v4/modules/bank/source"
 	localbanksource "github.com/forbole/bdjuno/v4/modules/bank/source/local"
 	remotebanksource "github.com/forbole/bdjuno/v4/modules/bank/source/remote"
@@ -42,32 +32,41 @@ import (
 	mintsource "github.com/forbole/bdjuno/v4/modules/mint/source"
 	localmintsource "github.com/forbole/bdjuno/v4/modules/mint/source/local"
 	remotemintsource "github.com/forbole/bdjuno/v4/modules/mint/source/remote"
+	permissionsource "github.com/forbole/bdjuno/v4/modules/permission/source"
+	remotepermissionsource "github.com/forbole/bdjuno/v4/modules/permission/source/remote"
+	permissiontypes "github.com/forbole/bdjuno/v4/modules/permission/types"
 	slashingsource "github.com/forbole/bdjuno/v4/modules/slashing/source"
 	localslashingsource "github.com/forbole/bdjuno/v4/modules/slashing/source/local"
 	remoteslashingsource "github.com/forbole/bdjuno/v4/modules/slashing/source/remote"
 	spsource "github.com/forbole/bdjuno/v4/modules/sp/source"
 	remotespsource "github.com/forbole/bdjuno/v4/modules/sp/source/remote"
+	sptypes "github.com/forbole/bdjuno/v4/modules/sp/types"
 	stakingsource "github.com/forbole/bdjuno/v4/modules/staking/source"
 	localstakingsource "github.com/forbole/bdjuno/v4/modules/staking/source/local"
 	remotestakingsource "github.com/forbole/bdjuno/v4/modules/staking/source/remote"
 	storagesource "github.com/forbole/bdjuno/v4/modules/storage/source"
 	remotestoragesource "github.com/forbole/bdjuno/v4/modules/storage/source/remote"
+	storagetypes "github.com/forbole/bdjuno/v4/modules/storage/types"
 	vgsource "github.com/forbole/bdjuno/v4/modules/virtualgroup/source"
 	remotevgsource "github.com/forbole/bdjuno/v4/modules/virtualgroup/source/remote"
+	vgtypes "github.com/forbole/bdjuno/v4/modules/virtualgroup/types"
 	nodeconfig "github.com/forbole/juno/v5/node/config"
+	"github.com/forbole/juno/v5/node/local"
+	"github.com/forbole/juno/v5/node/remote"
 )
 
 type Sources struct {
-	BankSource      banksource.Source
-	DistrSource     distrsource.Source
-	GovSource       govsource.Source
-	InflationSource inflationsource.Source
-	MintSource      mintsource.Source
-	SlashingSource  slashingsource.Source
-	StakingSource   stakingsource.Source
-	StorageSource   storagesource.Source
-	SpSource        spsource.Source
-	VGSource        vgsource.Source
+	BankSource       banksource.Source
+	DistrSource      distrsource.Source
+	GovSource        govsource.Source
+	InflationSource  inflationsource.Source
+	MintSource       mintsource.Source
+	SlashingSource   slashingsource.Source
+	StakingSource    stakingsource.Source
+	StorageSource    storagesource.Source
+	SpSource         spsource.Source
+	VGSource         vgsource.Source
+	PermissionSource permissionsource.Source
 }
 
 func BuildSources(nodeCfg nodeconfig.Config, encodingConfig *params.EncodingConfig) (*Sources, error) {
@@ -152,6 +151,10 @@ func buildRemoteSources(cfg *remote.Details) (*Sources, error) {
 		VGSource: remotevgsource.NewSource(
 			source,
 			vgtypes.NewQueryClient(source.GrpcConn),
+		),
+		PermissionSource: remotepermissionsource.NewSource(
+			source,
+			permissiontypes.NewQueryClient(source.GrpcConn),
 		),
 	}, nil
 }

@@ -3,11 +3,12 @@ package models
 import (
 	"time"
 
+	"github.com/lib/pq"
 	"gorm.io/datatypes"
 )
 
 type Object struct {
-	ID                  uint64         `gorm:"column:id;primaryKey"`
+	ID                  uint64         `gorm:"column:id;primaryKey;autoIncrement"`
 	BucketID            string         `gorm:"column:bucket_id;type:TEXT;index:idx_bucket_id"`
 	BucketName          string         `gorm:"column:bucket_name;type:VARCHAR(64);index:idx_bucket_name_object_name,priority:1"`
 	ObjectID            string         `gorm:"column:object_id;type:TEXT;uniqueIndex:idx_object_id"`
@@ -22,20 +23,23 @@ type Object struct {
 	Status              string         `gorm:"column:status;type:VARCHAR(50)"`
 	RedundancyType      string         `gorm:"column:redundancy_type;type:VARCHAR(50)"`
 	SourceType          string         `gorm:"column:source_type;type:VARCHAR(50)"`
-	CheckSums           []string       `gorm:"column:checksums;type:TEXT[]"`
+	CheckSums           pq.StringArray `gorm:"column:checksums;type:TEXT[]"`
 	DeleteAt            int64          `gorm:"column:delete_at"`
 	DeleteReason        string         `gorm:"column:delete_reason;type:VARCHAR(256)"`
 	CreateAt            int64          `gorm:"column:create_at"`
 	CreateTxHash        string         `gorm:"column:create_tx_hash;type:TEXT;not null"`
+	CreateEVMTxHash     string         `gorm:"column:create_evm_tx_hash;type:TEXT;not null"`
 	CreateTime          time.Time      `gorm:"column:create_time"`
 	UpdateAt            int64          `gorm:"column:update_at;index:idx_update_at"`
 	UpdateTxHash        string         `gorm:"column:update_tx_hash;type:TEXT;not null"`
+	UpdateEVMTxHash     string         `gorm:"column:update_evm_tx_hash;type:TEXT;not null"`
 	SealedTxHash        string         `gorm:"column:sealed_tx_hash;type:TEXT"`
+	SealedEvmTxHash     string         `gorm:"column:sealed_evm_tx_hash;type:TEXT"`
 	UpdateTime          time.Time      `gorm:"column:update_time"`
 	Removed             bool           `gorm:"column:removed;default:false"`
 	Tags                datatypes.JSON `gorm:"column:tags;type:JSON"`
 	IsUpdating          bool           `gorm:"column:is_updating"`
-	ContentUpdatedTime  int64          `gorm:"column:content_updated_time"`
+	ContentUpdatedTime  time.Time      `gorm:"column:content_updated_time"`
 	Updater             string         `gorm:"column:updater;type:TEXT"`
 	Version             int64          `gorm:"column:version"`
 }

@@ -1,5 +1,5 @@
 table:
-  name: bucket
+  name: buckets
   schema: public
 select_permissions:
   - role: anonymous
@@ -15,7 +15,7 @@ array_relationships:
       foreign_key_constraint_on:
         column: bucket_id
         table:
-          name: object
+          name: objects
           schema: public
 object_relationships:
   - name: global_virtual_group_family

@@ -21,10 +21,8 @@ function start() {
     echo "Importing the Hasura metadata..."
     hasura metadata apply --project "${project_path}"/hasura --endpoint http://localhost:8080 --admin-secret mechain
 
-    echo "Initializing the configuration..."
-    ${bin} --home "${basedir}" parse genesis-file --genesis-file-path ./genesis.json
-
-    cp ${basedir}/config.yaml ${basedir}/data
+    # echo "Initializing the configuration..."
+    # ${bin} --home "${basedir}" parse genesis-file --genesis-file-path ./genesis.json
 
     # echo "run BDjuno...."
     # # nohup "${bin}" start --home "${basedir}" >"${basedir}"/bdjuno.log 2>&1 &

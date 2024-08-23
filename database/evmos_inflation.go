@@ -12,7 +12,7 @@ import (
 )
 
 // SaveEvmosInflationParams allows to store the given params inside the database
-func (db *Db) SaveEvmosInflationParams(params *types.EvmosInflationParams) error {
+func (db *DB) SaveEvmosInflationParams(params *types.EvmosInflationParams) error {
 	stmt := `
 INSERT INTO evmos_inflation_params (params, height) 
 VALUES ($1, $2)
@@ -35,7 +35,7 @@ WHERE evmos_inflation_params.height <= excluded.height`
 }
 
 // SaveEvmosInflationData allows to store the given inflation data inside the database
-func (db *Db) SaveEvmosInflationData(data *types.EvmosInflationData) error {
+func (db *DB) SaveEvmosInflationData(data *types.EvmosInflationData) error {
 	stmt := `
 INSERT INTO evmos_inflation_data (circulating_supply, epoch_mint_provision, inflation_rate, inflation_period, skipped_epochs, height) 
 VALUES ($1, $2, $3, $4, $5, $6)
@@ -57,7 +57,6 @@ WHERE evmos_inflation_data.height <= excluded.height`
 		pq.Array(dbtypes.NewDbDecCoins(data.EpochMintProvision)),
 		inflationRate, data.InflationPeriod, data.SkippedEpochs, data.Height,
 	)
-
 	if err != nil {
 		return fmt.Errorf("error while storing evmos inflation data: %s", err)
 	}

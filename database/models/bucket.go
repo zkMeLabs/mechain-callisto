@@ -8,7 +8,7 @@ import (
 )
 
 type Bucket struct {
-	ID                         uint64          `gorm:"column:id;primaryKey"`
+	ID                         uint64          `gorm:"column:id;primaryKey;autoIncrement"`
 	BucketID                   string          `gorm:"column:bucket_id;type:TEXT;uniqueIndex:idx_bucket_id"`
 	BucketName                 string          `gorm:"column:bucket_name;type:VARCHAR(64);uniqueIndex:idx_bucket_name"`
 	OwnerAddress               string          `gorm:"column:owner_address;type:TEXT;index:idx_owner"`
@@ -24,10 +24,12 @@ type Bucket struct {
 	StorageSize                decimal.Decimal `gorm:"column:storage_size;type:DECIMAL(65, 0);not null"`
 	ChargeSize                 decimal.Decimal `gorm:"column:charge_size;type:DECIMAL(65, 0);not null"`
 	CreateAt                   int64           `gorm:"column:create_at"`
-	CreateTxHash               string          `gorm:"column:create_tx_hash;type:TEXT;not null"`
 	CreateTime                 time.Time       `gorm:"column:create_time"`
+	CreateTxHash               string          `gorm:"column:create_tx_hash;type:TEXT;not null"`
+	CreateEVMTxHash            string          `gorm:"column:create_evm_tx_hash;type:TEXT;not null"`
 	UpdateAt                   int64           `gorm:"column:update_at"`
 	UpdateTxHash               string          `gorm:"column:update_tx_hash;type:TEXT;not null"`
+	UpdateEVMTxHash            string          `gorm:"column:update_evm_tx_hash;type:TEXT;not null"`
 	UpdateTime                 time.Time       `gorm:"column:update_time"`
 	Removed                    bool            `gorm:"column:removed;default:false"`
 	OffChainStatus             int             `gorm:"column:off_chain_status;type:INT;not null;default:0"`

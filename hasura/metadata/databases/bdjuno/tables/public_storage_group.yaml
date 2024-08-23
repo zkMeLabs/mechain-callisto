@@ -1,5 +1,5 @@
 table:
-  name: storage_group
+  name: groups
   schema: public
 select_permissions:
   - role: anonymous
@@ -14,5 +14,5 @@ array_relationships:
       foreign_key_constraint_on:
         column: group_id
         table:
-          name: storage_group_member
+          name: group_member
           schema: public

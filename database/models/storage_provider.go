@@ -1,11 +1,9 @@
 package models
 
-import (
-	"math/big"
-)
+import "math/big"
 
 type StorageProvider struct {
-	ID              uint64  `gorm:"column:id;primaryKey"`
+	ID              uint64  `gorm:"column:id;primaryKey;autoIncrement"`
 	SpID            uint32  `gorm:"column:sp_id;index:idx_sp_id"`
 	OperatorAddress string  `gorm:"column:operator_address;type:TEXT;index:idx_operator_address"`
 	FundingAddress  string  `gorm:"column:funding_address;type:TEXT"`
@@ -27,8 +25,10 @@ type StorageProvider struct {
 	StorePrice      big.Int `gorm:"column:store_price"`
 	CreateAt        int64   `gorm:"column:create_at"`
 	CreateTxHash    string  `gorm:"column:create_tx_hash;type:TEXT;not null"`
+	CreateEVMTxHash string  `gorm:"column:create_evm_tx_hash;type:TEXT;not null"`
 	UpdateAt        int64   `gorm:"column:update_at"`
 	UpdateTxHash    string  `gorm:"column:update_tx_hash;type:TEXT;not null"`
+	UpdateEVMTxHash string  `gorm:"column:update_evm_tx_hash;type:TEXT;not null"`
 	Removed         bool    `gorm:"column:removed;default:false"`
 }
 

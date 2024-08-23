@@ -10,11 +10,11 @@ import (
 	"gorm.io/gorm"
 )
 
-var _ database.Database = &Db{}
+var _ database.Database = &DB{}
 
-// Db represents a PostgreSQL database with expanded features.
+// DB represents a PostgreSQL database with expanded features.
 // so that it can properly store custom BigDipper-related data.
-type Db struct {
+type DB struct {
 	G *gorm.DB
 	*postgresql.Database
 	Sqlx *sqlx.DB
@@ -35,7 +35,7 @@ func Builder(ctx *database.Context) (database.Database, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error while opening the connection to the database: %s", err)
 	}
-	return &Db{
+	return &DB{
 		G:        gdb,
 		Database: psqlDb,
 		Sqlx:     sqlx.NewDb(psqlDb.SQL.DB, "postgresql"),
@@ -43,10 +43,30 @@ func Builder(ctx *database.Context) (database.Database, error) {
 }
 
 // Cast allows to cast the given db to a Db instance
-func Cast(db database.Database) *Db {
-	bdDatabase, ok := db.(*Db)
+func Cast(db database.Database) *DB {
+	bdDatabase, ok := db.(*DB)
 	if !ok {
 		panic(fmt.Errorf("given database instance is not a Db"))
 	}
 	return bdDatabase
+}
+
+func (db *DB) ExecuteStatements(statements map[string][]interface{}) error {
+	if len(statements) == 0 {
+		return nil
+	}
+	tx := db.G.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+	for sql, vars := range statements {
+		if err := tx.Exec(sql, vars...).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+	return nil
 }
