@@ -12,7 +12,10 @@ chain:
     - upgrade
     - actions
     - inflation
+    - sp
+    - virtualgroup
     - storage
+    - permission
 node:
   type: remote
   config:

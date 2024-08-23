@@ -9,7 +9,7 @@ import (
 )
 
 type Permission struct {
-	ID             uint64    `gorm:"column:id;type:bigint(64);primaryKey"`
+	ID             uint64    `gorm:"column:id;type:bigint(64);primaryKey;autoIncrement"`
 	PrincipalType  int32     `gorm:"column:principal_type;type:int;uniqueIndex:idx_policy,priority:1"`
 	PrincipalValue string    `gorm:"column:principal_value;type:varchar(128);uniqueIndex:idx_policy,priority:2"`
 	ResourceType   string    `gorm:"column:resource_type;type:varchar(64);uniqueIndex:idx_policy,priority:3"`
@@ -26,7 +26,7 @@ func (p Permission) TableName() string {
 }
 
 type Statements struct {
-	ID             uint64         `gorm:"id;type:bigint(64);primaryKey"`
+	ID             uint64         `gorm:"id;type:bigint(64);primaryKey;autoIncrement"`
 	PolicyID       common.Hash    `gorm:"policy_id;type:BINARY(32);index:idx_policy_id"`
 	Effect         string         `gorm:"effect;type:varchar(32)"`
 	ActionValue    int            `gorm:"action_value;type:int"`
@@ -41,7 +41,7 @@ func (s Statements) TableName() string {
 }
 
 type GroupMember struct {
-	ID      uint64         `gorm:"id;type:bigint(64);primaryKey"`
+	ID      uint64         `gorm:"id;type:bigint(64);primaryKey;autoIncrement"`
 	GroupID uint64         `gorm:"id;type:bigint(64);index:idx_group_id"`
 	Account common.Address `gorm:"account;type:BINARY(20);index:idx_account"`
 	Removed bool           `gorm:"removed"`

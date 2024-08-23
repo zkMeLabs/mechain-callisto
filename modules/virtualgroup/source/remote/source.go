@@ -11,21 +11,21 @@ var _ source.Source = &Source{}
 // Source implements storage.Source using a remote node
 type Source struct {
 	*remote.Source
-	virtualGroupClient types.QueryClient
+	Cli types.QueryClient
 }
 
 // NewSource returns a new Source implementation
-func NewSource(source *remote.Source, virtualGroupClient types.QueryClient) *Source {
+func NewSource(source *remote.Source, cli types.QueryClient) *Source {
 	return &Source{
-		Source:             source,
-		virtualGroupClient: virtualGroupClient,
+		Source: source,
+		Cli:    cli,
 	}
 }
 
-func (s Source) GlobalVirtualGroup(height int64, globalVirtualGroupId uint32) (types.GlobalVirtualGroup, error) {
-	res, err := s.virtualGroupClient.GlobalVirtualGroup(
+func (s Source) GlobalVirtualGroup(height int64, globalVirtualGroupID uint32) (types.GlobalVirtualGroup, error) {
+	res, err := s.Cli.GlobalVirtualGroup(
 		remote.GetHeightRequestContext(s.Ctx, height),
-		&types.QueryGlobalVirtualGroupRequest{GlobalVirtualGroupId: globalVirtualGroupId},
+		&types.QueryGlobalVirtualGroupRequest{GlobalVirtualGroupId: globalVirtualGroupID},
 	)
 	if err != nil {
 		return types.GlobalVirtualGroup{}, err
@@ -34,10 +34,10 @@ func (s Source) GlobalVirtualGroup(height int64, globalVirtualGroupId uint32) (t
 	return *res.GlobalVirtualGroup, nil
 }
 
-func (s Source) GlobalVirtualGroupByFamilyID(height int64, globalVirtualGroupFamilyId uint32) ([]*types.GlobalVirtualGroup, error) {
-	res, err := s.virtualGroupClient.GlobalVirtualGroupByFamilyID(
+func (s Source) GlobalVirtualGroupByFamilyID(height int64, globalVirtualGroupFamilyID uint32) ([]*types.GlobalVirtualGroup, error) {
+	res, err := s.Cli.GlobalVirtualGroupByFamilyID(
 		remote.GetHeightRequestContext(s.Ctx, height),
-		&types.QueryGlobalVirtualGroupByFamilyIDRequest{GlobalVirtualGroupFamilyId: globalVirtualGroupFamilyId},
+		&types.QueryGlobalVirtualGroupByFamilyIDRequest{GlobalVirtualGroupFamilyId: globalVirtualGroupFamilyID},
 	)
 	if err != nil {
 		return nil, err
@@ -46,10 +46,10 @@ func (s Source) GlobalVirtualGroupByFamilyID(height int64, globalVirtualGroupFam
 	return res.GlobalVirtualGroups, nil
 }
 
-func (s Source) GlobalVirtualGroupFamily(height int64, familyId uint32) (types.GlobalVirtualGroupFamily, error) {
-	res, err := s.virtualGroupClient.GlobalVirtualGroupFamily(
+func (s Source) GlobalVirtualGroupFamily(height int64, familyID uint32) (types.GlobalVirtualGroupFamily, error) {
+	res, err := s.Cli.GlobalVirtualGroupFamily(
 		remote.GetHeightRequestContext(s.Ctx, height),
-		&types.QueryGlobalVirtualGroupFamilyRequest{FamilyId: familyId},
+		&types.QueryGlobalVirtualGroupFamilyRequest{FamilyId: familyID},
 	)
 	if err != nil {
 		return types.GlobalVirtualGroupFamily{}, err

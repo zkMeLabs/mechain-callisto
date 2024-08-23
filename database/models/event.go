@@ -1,7 +1,7 @@
 package models
 
 type Event struct {
-	ID           uint64 `gorm:"id;type:bigint(64);primaryKey"`
+	ID           uint64 `gorm:"id;type:bigint(64);primaryKey;autoIncrement"`
 	ResourceType string `gorm:"resource_type;type:varchar(64);not null"`
 	ResourceID   string `gorm:"resource_id;type:TEXT;not null"`
 	Height       int64  `gorm:"column:height;not null"`

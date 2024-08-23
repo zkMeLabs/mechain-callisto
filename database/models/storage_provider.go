@@ -3,7 +3,7 @@ package models
 import "math/big"
 
 type StorageProvider struct {
-	ID              uint64  `gorm:"column:id;primaryKey"`
+	ID              uint64  `gorm:"column:id;primaryKey;autoIncrement"`
 	SpID            uint32  `gorm:"column:sp_id;index:idx_sp_id"`
 	OperatorAddress string  `gorm:"column:operator_address;type:TEXT;index:idx_operator_address"`
 	FundingAddress  string  `gorm:"column:funding_address;type:TEXT"`

@@ -5,7 +5,7 @@ import (
 )
 
 type LocalVirtualGroup struct {
-	ID                   uint64    `gorm:"column:id;primaryKey"`
+	ID                   uint64    `gorm:"column:id;primaryKey;autoIncrement"`
 	LocalVirtualGroupID  uint32    `gorm:"column:local_virtual_group_id;index:idx_lvg_id;index:idx_lvg_bucket,priority:1"`
 	GlobalVirtualGroupID uint32    `gorm:"column:global_virtual_group_id;index:idx_gvg_id"`
 	BucketID             string    `gorm:"column:bucket_id;type:TEXT;index:idx_bucket_id;index:idx_lvg_bucket,priority:2"`

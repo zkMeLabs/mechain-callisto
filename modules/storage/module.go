@@ -2,11 +2,9 @@ package storage
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	storagesource "github.com/forbole/bdjuno/v4/modules/storage/source"
-
-	"github.com/forbole/juno/v5/modules"
-
 	"github.com/forbole/bdjuno/v4/database"
+	"github.com/forbole/bdjuno/v4/modules/storage/source"
+	"github.com/forbole/juno/v5/modules"
 )
 
 var (
@@ -16,13 +14,13 @@ var (
 
 // Module represents the x/distr module
 type Module struct {
-	source storagesource.Source
+	source source.Source
 	cdc    codec.Codec
 	db     *database.DB
 }
 
 // NewModule returns a new Module instance
-func NewModule(source storagesource.Source, cdc codec.Codec, db *database.DB) *Module {
+func NewModule(source source.Source, cdc codec.Codec, db *database.DB) *Module {
 	return &Module{
 		source: source,
 		cdc:    cdc,

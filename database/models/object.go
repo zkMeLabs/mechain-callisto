@@ -7,7 +7,7 @@ import (
 )
 
 type Object struct {
-	ID                  uint64         `gorm:"column:id;primaryKey"`
+	ID                  uint64         `gorm:"column:id;primaryKey;autoIncrement"`
 	BucketID            string         `gorm:"column:bucket_id;type:TEXT;index:idx_bucket_id"`
 	BucketName          string         `gorm:"column:bucket_name;type:VARCHAR(64);index:idx_bucket_name_object_name,priority:1"`
 	ObjectID            string         `gorm:"column:object_id;type:TEXT;uniqueIndex:idx_object_id"`

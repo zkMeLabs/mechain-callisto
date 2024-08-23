@@ -5,7 +5,7 @@ import (
 )
 
 type GlobalVirtualGroupFamily struct {
-	ID                         uint64    `gorm:"column:id;primaryKey"`
+	ID                         uint64    `gorm:"column:id;primaryKey;autoIncrement"`
 	GlobalVirtualGroupFamilyId uint32    `gorm:"column:global_virtual_group_family_id;index:idx_vgf_id"`
 	PrimarySpID                uint32    `gorm:"column:primary_sp_id;index:idx_primary_sp_id"`
 	GlobalVirtualGroupIDs      []uint32  `gorm:"column:global_virtual_group_ids;type:TEXT"`

@@ -214,7 +214,7 @@ func (m *Module) handleRenewGroupMember(ctx context.Context, block *tmctypes.Res
 		if e.ExpirationTime != nil {
 			expirationTime = e.ExpirationTime.Unix()
 		}
-		k := fmt.Sprintf("Update `groups` set expiration_time = ?, update_at = ?,update_time = ? where account_id = %s and group_id = ?", e.Member)
+		k := fmt.Sprintf("Update `groups` set expiration_time = ?, update_at = ?,update_time = ? where account_address = %s and group_id = ?", e.Member)
 		v := []interface{}{expirationTime, block.Block.Height, block.Block.Time, renewGroupMember.GroupId.BigInt().String()}
 		res[k] = v
 	}

@@ -8,7 +8,7 @@ import (
 )
 
 type Bucket struct {
-	ID                         uint64          `gorm:"column:id;primaryKey"`
+	ID                         uint64          `gorm:"column:id;primaryKey;autoIncrement"`
 	BucketID                   string          `gorm:"column:bucket_id;type:TEXT;uniqueIndex:idx_bucket_id"`
 	BucketName                 string          `gorm:"column:bucket_name;type:VARCHAR(64);uniqueIndex:idx_bucket_name"`
 	OwnerAddress               string          `gorm:"column:owner_address;type:TEXT;index:idx_owner"`

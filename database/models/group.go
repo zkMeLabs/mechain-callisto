@@ -7,7 +7,7 @@ import (
 )
 
 type Group struct {
-	ID              uint64         `gorm:"column:id;primaryKey"`
+	ID              uint64         `gorm:"column:id;primaryKey;autoIncrement"`
 	OwnerAddress    string         `gorm:"column:owner_address;type:TEXT;index:idx_owner"`
 	GroupID         string         `gorm:"column:group_id;type:TEXT;index:idx_group_id;uniqueIndex:idx_account_group,priority:2"`
 	GroupName       string         `gorm:"column:group_name;type:VARCHAR(63);index:idx_group_name"`

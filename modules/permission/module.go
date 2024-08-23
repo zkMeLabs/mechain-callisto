@@ -1,9 +1,9 @@
-package sp
+package permission
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/forbole/bdjuno/v4/database"
-	"github.com/forbole/bdjuno/v4/modules/sp/source"
+	"github.com/forbole/bdjuno/v4/modules/permission/source"
 	"github.com/forbole/juno/v5/modules"
 )
 
@@ -30,5 +30,5 @@ func NewModule(source source.Source, cdc codec.Codec, db *database.DB) *Module {
 
 // Name implements modules.Module
 func (m *Module) Name() string {
-	return "sp"
+	return "permission"
 }

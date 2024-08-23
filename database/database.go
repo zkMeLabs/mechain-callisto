@@ -52,6 +52,9 @@ func Cast(db database.Database) *DB {
 }
 
 func (db *DB) ExecuteStatements(statements map[string][]interface{}) error {
+	if len(statements) == 0 {
+		return nil
+	}
 	tx := db.G.Begin()
 	if tx.Error != nil {
 		return tx.Error
