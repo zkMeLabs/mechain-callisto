@@ -1,7 +1,7 @@
 -- buckets tables
 CREATE TABLE buckets (
     id SERIAL PRIMARY KEY,
-    bucket_id INT NOT NULL UNIQUE,
+    bucket_id TEXT NOT NULL UNIQUE,
     bucket_name TEXT NOT NULL UNIQUE CHECK (
         LENGTH(bucket_name) BETWEEN 3 AND 63
     ),

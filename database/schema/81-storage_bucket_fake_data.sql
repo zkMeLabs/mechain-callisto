@@ -26,7 +26,7 @@ INSERT INTO buckets (
         tags
     )
 VALUES (
-        1,
+        '1',
         'bucket1',
         '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
         '0xabcdefabcdefabcdefabcdefabcdefabcdef',
@@ -53,7 +53,7 @@ VALUES (
         '{"key": "value"}'
     ),
     (
-        2,
+        '2',
         'bucket2',
         '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
         '0xabcdefabcdefabcdefabcdefabcdefabcdef',
@@ -80,7 +80,7 @@ VALUES (
         '{"key": "value"}'
     ),
     (
-        3,
+        '3',
         'bucket3',
         '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
         '0xabcdefabcdefabcdefabcdefabcdefabcdef',
@@ -107,7 +107,7 @@ VALUES (
         '{"key": "value"}'
     ),
     (
-        4,
+        '4',
         'bucket4',
         '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
         '0xabcdefabcdefabcdefabcdefabcdefabcdef',
@@ -134,7 +134,7 @@ VALUES (
         '{"key": "value"}'
     ),
     (
-        5,
+        '5',
         'bucket5',
         '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
         '0xabcdefabcdefabcdefabcdefabcdefabcdef',
@@ -161,7 +161,7 @@ VALUES (
         '{"key": "value"}'
     ),
     (
-        6,
+        '6',
         'bucket6',
         '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
         '0xabcdefabcdefabcdefabcdefabcdefabcdef',
@@ -188,7 +188,7 @@ VALUES (
         '{"key": "value"}'
     ),
     (
-        7,
+        '7',
         'bucket7',
         '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
         '0xabcdefabcdefabcdefabcdefabcdefabcdef',
@@ -215,7 +215,7 @@ VALUES (
         '{"key": "value"}'
     ),
     (
-        8,
+        '8',
         'bucket8',
         '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
         '0xabcdefabcdefabcdefabcdefabcdefabcdef',
@@ -242,7 +242,7 @@ VALUES (
         '{"key": "value"}'
     ),
     (
-        16,
+        '16',
         'bucket16',
         '0xabcdefabcdefabcdefabcdefabcdefabcdefabcdef',
         '0xabcdefabcdefabcdefabcdefabcdefabcdef',

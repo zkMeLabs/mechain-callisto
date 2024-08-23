@@ -1,6 +1,6 @@
 CREATE TABLE objects (
     id SERIAL PRIMARY KEY,
-    bucket_id INT NOT NULL,
+    bucket_id TEXT NOT NULL,
     bucket_name TEXT NOT NULL,
     object_id TEXT NOT NULL UNIQUE,
     object_name TEXT,
