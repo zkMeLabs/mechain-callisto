@@ -1,6 +1,7 @@
 package remote
 
 import (
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/forbole/bdjuno/v4/modules/sp/source"
 	"github.com/forbole/bdjuno/v4/modules/sp/types"
 	"github.com/forbole/juno/v5/node/remote"
@@ -32,4 +33,16 @@ func (s Source) StorageProvider(height int64, id uint32) (types.StorageProvider,
 	}
 
 	return *res.StorageProvider, nil
+}
+
+func (s Source) StorageProviders(height int64, pageRequest query.PageRequest) ([]*types.StorageProvider, *query.PageResponse, error) {
+	res, err := s.Cli.StorageProviders(
+		remote.GetHeightRequestContext(s.Ctx, height),
+		&types.QueryStorageProvidersRequest{Pagination: &pageRequest},
+	)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return res.Sps, res.Pagination, nil
 }
