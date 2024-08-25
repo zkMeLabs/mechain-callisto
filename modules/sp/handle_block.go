@@ -3,11 +3,11 @@ package sp
 import (
 	"context"
 	"errors"
-	"github.com/cosmos/cosmos-sdk/types/query"
 
 	abci "github.com/cometbft/cometbft/abci/types"
 	tmctypes "github.com/cometbft/cometbft/rpc/core/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/cosmos/gogoproto/proto"
 	"github.com/forbole/bdjuno/v4/database/models"
 	sptypes "github.com/forbole/bdjuno/v4/modules/sp/types"
@@ -48,7 +48,6 @@ func (m *Module) HandleBlock(
 			log.Error().Str("module", "sp").Str("page response", pageResponse.String()).Str("first storage provide", sps[0].String())
 		}
 	}
-
 	ctx := context.Background()
 	statements, err := m.ExportEventsInTxs(ctx, block, txs)
 	if err != nil {
@@ -77,7 +76,7 @@ func (m Module) ExportEventsInTxs(ctx context.Context, block *tmctypes.ResultBlo
 func (m *Module) ExtractEvent(ctx context.Context, block *tmctypes.ResultBlock, tx *junotypes.Tx) (map[string][]interface{}, error) {
 	allSQL := make(map[string][]interface{})
 	for _, event := range tx.Events {
-		sqls, err := m.ExtractGroupEventStatements(ctx, block, tx.TxHash, sdk.Event(event))
+		sqls, err := m.ExtractEventStatements(ctx, block, tx.TxHash, sdk.Event(event))
 		if err != nil {
 			log.Err(err)
 			continue
@@ -89,7 +88,7 @@ func (m *Module) ExtractEvent(ctx context.Context, block *tmctypes.ResultBlock, 
 	return allSQL, nil
 }
 
-func (m *Module) ExtractGroupEventStatements(ctx context.Context, block *tmctypes.ResultBlock, txHash string, event sdk.Event) (map[string][]interface{}, error) {
+func (m *Module) ExtractEventStatements(ctx context.Context, block *tmctypes.ResultBlock, txHash string, event sdk.Event) (map[string][]interface{}, error) {
 	if !StorageProviderEvents[event.Type] {
 		return nil, nil
 	}
