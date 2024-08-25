@@ -7,7 +7,7 @@ require (
 	cosmossdk.io/math v1.0.1
 	cosmossdk.io/simapp v0.0.0-20230608160436-666c345ad23d
 	github.com/cometbft/cometbft v0.37.2
-	github.com/cosmos/cosmos-proto v1.0.0-beta.3
+	github.com/cosmos/cosmos-proto v1.0.0-beta.5
 	github.com/cosmos/cosmos-sdk v0.47.4
 	github.com/cosmos/gogoproto v1.4.10
 	github.com/ethereum/go-ethereum v1.11.5
@@ -23,10 +23,10 @@ require (
 	github.com/rs/zerolog v1.29.1
 	github.com/shopspring/decimal v1.4.0
 	github.com/spf13/cobra v1.7.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20230629202037-9506855d4529
 	google.golang.org/grpc v1.56.3
-	google.golang.org/protobuf v1.31.0
+	google.golang.org/protobuf v1.33.0
 	gopkg.in/yaml.v3 v3.0.1
 	gorm.io/datatypes v1.2.1
 	gorm.io/driver/postgres v1.5.2
@@ -104,7 +104,7 @@ require (
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/btree v1.1.2 // indirect
-	github.com/google/go-cmp v0.5.9 // indirect
+	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/orderedcode v0.0.1 // indirect
 	github.com/google/s2a-go v0.1.4 // indirect
 	github.com/google/uuid v1.3.1 // indirect
@@ -213,7 +213,7 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gorm.io/driver/mysql v1.5.6 // indirect
 	nhooyr.io/websocket v1.8.7 // indirect
-	pgregory.net/rapid v0.5.5 // indirect
+	pgregory.net/rapid v1.1.0 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
