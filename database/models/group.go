@@ -31,3 +31,13 @@ type Group struct {
 func (*Group) TableName() string {
 	return "groups"
 }
+
+func (b *Group) ToBucketEvent(e string) *GroupEvent {
+	return &GroupEvent{
+		GroupID:   b.GroupID,
+		Height:    b.CreateAt,
+		TxHash:    b.CreateTxHash,
+		EVMTxHash: b.CreateEVMTxHash,
+		Event:     e,
+	}
+}

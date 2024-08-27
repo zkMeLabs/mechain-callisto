@@ -160,16 +160,14 @@ func (m *Module) handleCreateLocalVirtualGroup(ctx context.Context, block *tmcty
 		GlobalVirtualGroupID: createLocalVirtualGroup.GlobalVirtualGroupId,
 		BucketID:             createLocalVirtualGroup.BucketId.BigInt().String(),
 		StoredSize:           createLocalVirtualGroup.StoredSize,
-
-		CreateAt:     block.Block.Height,
-		CreateTxHash: txHash,
-		CreateTime:   block.Block.Time,
-		UpdateAt:     block.Block.Height,
-		UpdateTxHash: txHash,
-		UpdateTime:   block.Block.Time,
-		Removed:      false,
+		CreateAt:             block.Block.Height,
+		CreateTxHash:         txHash,
+		CreateTime:           block.Block.Time,
+		UpdateAt:             block.Block.Height,
+		UpdateTxHash:         txHash,
+		UpdateTime:           block.Block.Time,
+		Removed:              false,
 	}
-
 	k, v := m.db.SaveLVGToSQL(ctx, lvgGroup)
 	return map[string][]interface{}{
 		k: v,
@@ -182,12 +180,10 @@ func (m *Module) handleUpdateLocalVirtualGroup(ctx context.Context, block *tmcty
 		BucketID:             updateLocalVirtualGroup.BucketId.BigInt().String(),
 		GlobalVirtualGroupID: updateLocalVirtualGroup.GlobalVirtualGroupId,
 		StoredSize:           updateLocalVirtualGroup.StoredSize,
-
-		UpdateAt:     block.Block.Height,
-		UpdateTxHash: txHash,
-		UpdateTime:   block.Block.Time,
+		UpdateAt:             block.Block.Height,
+		UpdateTxHash:         txHash,
+		UpdateTime:           block.Block.Time,
 	}
-
 	k, v := m.db.UpdateLVGToSQL(ctx, lvgGroup)
 	return map[string][]interface{}{
 		k: v,
@@ -203,14 +199,13 @@ func (m *Module) handleCreateGlobalVirtualGroup(ctx context.Context, block *tmct
 		StoredSize:            createGlobalVirtualGroup.StoredSize,
 		VirtualPaymentAddress: createGlobalVirtualGroup.VirtualPaymentAddress,
 		TotalDeposit:          *createGlobalVirtualGroup.TotalDeposit.BigInt(),
-
-		CreateAt:     block.Block.Height,
-		CreateTxHash: txHash,
-		CreateTime:   block.Block.Time,
-		UpdateAt:     block.Block.Height,
-		UpdateTxHash: txHash,
-		UpdateTime:   block.Block.Time,
-		Removed:      false,
+		CreateAt:              block.Block.Height,
+		CreateTxHash:          txHash,
+		CreateTime:            block.Block.Time,
+		UpdateAt:              block.Block.Height,
+		UpdateTxHash:          txHash,
+		UpdateTime:            block.Block.Time,
+		Removed:               false,
 	}
 
 	k, v := m.db.SaveGVGToSQL(ctx, gvgGroup)
@@ -222,13 +217,11 @@ func (m *Module) handleCreateGlobalVirtualGroup(ctx context.Context, block *tmct
 func (m *Module) handleDeleteGlobalVirtualGroup(ctx context.Context, block *tmctypes.ResultBlock, txHash string, deleteGlobalVirtualGroup *vgtypes.EventDeleteGlobalVirtualGroup) map[string][]interface{} {
 	gvgGroup := &models.GlobalVirtualGroup{
 		GlobalVirtualGroupID: deleteGlobalVirtualGroup.Id,
-
-		Removed:      true,
-		UpdateAt:     block.Block.Height,
-		UpdateTxHash: txHash,
-		UpdateTime:   block.Block.Time,
+		Removed:              true,
+		UpdateAt:             block.Block.Height,
+		UpdateTxHash:         txHash,
+		UpdateTime:           block.Block.Time,
 	}
-
 	k, v := m.db.DeleteGVGToSQL(ctx, gvgGroup)
 	return map[string][]interface{}{
 		k: v,
@@ -259,16 +252,14 @@ func (m *Module) handleCreateGlobalVirtualGroupFamily(ctx context.Context, block
 		PrimarySpID:                createGlobalVirtualGroupFamily.PrimarySpId,
 		VirtualPaymentAddress:      createGlobalVirtualGroupFamily.VirtualPaymentAddress,
 		GlobalVirtualGroupIDs:      createGlobalVirtualGroupFamily.GlobalVirtualGroupIds,
-
-		CreateAt:     block.Block.Height,
-		CreateTxHash: txHash,
-		CreateTime:   block.Block.Time,
-		UpdateAt:     block.Block.Height,
-		UpdateTxHash: txHash,
-		UpdateTime:   block.Block.Time,
-		Removed:      false,
+		CreateAt:                   block.Block.Height,
+		CreateTxHash:               txHash,
+		CreateTime:                 block.Block.Time,
+		UpdateAt:                   block.Block.Height,
+		UpdateTxHash:               txHash,
+		UpdateTime:                 block.Block.Time,
+		Removed:                    false,
 	}
-
 	k, v := m.db.SaveVGFToSQL(ctx, vgfGroup)
 	return map[string][]interface{}{
 		k: v,
@@ -276,7 +267,7 @@ func (m *Module) handleCreateGlobalVirtualGroupFamily(ctx context.Context, block
 }
 
 func (m *Module) handleDeleteLocalVirtualGroup(ctx context.Context, block *tmctypes.ResultBlock, txHash string, deleteLocalVirtualGroup *vgtypes.EventDeleteLocalVirtualGroup) map[string][]interface{} {
-	data := &models.LocalVirtualGroup{
+	vg := &models.LocalVirtualGroup{
 		LocalVirtualGroupID: deleteLocalVirtualGroup.Id,
 		BucketID:            deleteLocalVirtualGroup.BucketId.BigInt().String(),
 		Removed:             true,
@@ -284,29 +275,28 @@ func (m *Module) handleDeleteLocalVirtualGroup(ctx context.Context, block *tmcty
 		UpdateTxHash:        txHash,
 		UpdateTime:          block.Block.Time,
 	}
-
-	k, v := m.db.DeleteLVGToSQL(ctx, data)
+	k, v := m.db.DeleteLVGToSQL(ctx, vg)
 	return map[string][]interface{}{
 		k: v,
 	}
 }
 
 func (m *Module) handleDeleteGlobalVirtualGroupFamily(ctx context.Context, block *tmctypes.ResultBlock, txHash string, deleteGlobalVirtualGroupFamily *vgtypes.EventDeleteGlobalVirtualGroupFamily) map[string][]interface{} {
-	data := &models.GlobalVirtualGroupFamily{
+	vg := &models.GlobalVirtualGroupFamily{
 		GlobalVirtualGroupFamilyId: deleteGlobalVirtualGroupFamily.Id,
 		Removed:                    true,
 		UpdateAt:                   block.Block.Height,
 		UpdateTxHash:               txHash,
 		UpdateTime:                 block.Block.Time,
 	}
-	k, v := m.db.UpdateVGFToSQL(ctx, data)
+	k, v := m.db.UpdateVGFToSQL(ctx, vg)
 	return map[string][]interface{}{
 		k: v,
 	}
 }
 
 func (m *Module) handleUpdateGlobalVirtualGroupFamily(ctx context.Context, block *tmctypes.ResultBlock, txHash string, updateGlobalVirtualGroupFamily *vgtypes.EventUpdateGlobalVirtualGroupFamily) map[string][]interface{} {
-	data := &models.GlobalVirtualGroupFamily{
+	vg := &models.GlobalVirtualGroupFamily{
 		GlobalVirtualGroupFamilyId: updateGlobalVirtualGroupFamily.Id,
 		PrimarySpID:                updateGlobalVirtualGroupFamily.PrimarySpId,
 		GlobalVirtualGroupIDs:      updateGlobalVirtualGroupFamily.GlobalVirtualGroupIds,
@@ -314,8 +304,7 @@ func (m *Module) handleUpdateGlobalVirtualGroupFamily(ctx context.Context, block
 		UpdateTxHash:               txHash,
 		UpdateTime:                 block.Block.Time,
 	}
-
-	k, v := m.db.UpdateVGFToSQL(ctx, data)
+	k, v := m.db.UpdateVGFToSQL(ctx, vg)
 	return map[string][]interface{}{
 		k: v,
 	}

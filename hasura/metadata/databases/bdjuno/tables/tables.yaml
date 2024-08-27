@@ -54,3 +54,4 @@
 - "!include public_storage_bucket_events.yaml"
 - "!include public_storage_object_events.yaml"
 - "!include public_storage_group_events.yaml"
+- "!include public_storage_sp_events.yaml"

@@ -98,7 +98,7 @@ func (m *Module) ExtractBucketEventStatements(ctx context.Context, block *tmctyp
 }
 
 func (m *Module) handleCreateBucket(ctx context.Context, block *tmctypes.ResultBlock, txHash, evmTxHash string, createBucket *storagetypes.EventCreateBucket) map[string][]interface{} {
-	bucket := &models.Bucket{
+	b := &models.Bucket{
 		BucketID:                   createBucket.BucketId.BigInt().String(),
 		BucketName:                 createBucket.BucketName,
 		OwnerAddress:               createBucket.Owner,
@@ -119,25 +119,16 @@ func (m *Module) handleCreateBucket(ctx context.Context, block *tmctypes.ResultB
 		UpdateEVMTxHash:            evmTxHash,
 		UpdateTime:                 block.Block.Time,
 	}
-	k, v := m.db.SaveBucketToSQL(ctx, bucket)
-
-	bucketEvent := &models.BucketEvent{
-		BucketID:  bucket.BucketID,
-		Height:    bucket.CreateAt,
-		TxHash:    bucket.CreateTxHash,
-		EVMTxHash: bucket.CreateEVMTxHash,
-		Event:     EventCreateBucket,
-	}
-	k1, v1 := m.db.SaveBucketEventToSQL(ctx, bucketEvent)
-
+	k, v := m.db.SaveBucketToSQL(ctx, b)
+	ek, ev := m.db.SaveBucketEventToSQL(ctx, b.ToBucketEvent(EventCreateBucket))
 	return map[string][]interface{}{
 		k:  v,
-		k1: v1,
+		ek: ev,
 	}
 }
 
 func (m *Module) handleDeleteBucket(ctx context.Context, block *tmctypes.ResultBlock, txHash, evmTxHash string, deleteBucket *storagetypes.EventDeleteBucket) map[string][]interface{} {
-	bucket := &models.Bucket{
+	b := &models.Bucket{
 		BucketID:                   deleteBucket.BucketId.BigInt().String(),
 		BucketName:                 deleteBucket.BucketName,
 		OwnerAddress:               deleteBucket.Owner,
@@ -148,15 +139,16 @@ func (m *Module) handleDeleteBucket(ctx context.Context, block *tmctypes.ResultB
 		UpdateEVMTxHash:            evmTxHash,
 		UpdateTime:                 block.Block.Time,
 	}
-
-	k, v := m.db.UpdateBucketToSQL(ctx, bucket)
+	k, v := m.db.UpdateBucketToSQL(ctx, b)
+	ek, ev := m.db.SaveBucketEventToSQL(ctx, b.ToBucketEvent(EventDeleteBucket))
 	return map[string][]interface{}{
-		k: v,
+		k:  v,
+		ek: ev,
 	}
 }
 
 func (m *Module) handleDiscontinueBucket(ctx context.Context, block *tmctypes.ResultBlock, txHash, evmTxHash string, discontinueBucket *storagetypes.EventDiscontinueBucket) map[string][]interface{} {
-	bucket := &models.Bucket{
+	b := &models.Bucket{
 		BucketID:        discontinueBucket.BucketId.BigInt().String(),
 		BucketName:      discontinueBucket.BucketName,
 		DeleteReason:    discontinueBucket.Reason,
@@ -167,15 +159,16 @@ func (m *Module) handleDiscontinueBucket(ctx context.Context, block *tmctypes.Re
 		UpdateEVMTxHash: evmTxHash,
 		UpdateTime:      block.Block.Time,
 	}
-
-	k, v := m.db.UpdateBucketToSQL(ctx, bucket)
+	k, v := m.db.UpdateBucketToSQL(ctx, b)
+	ek, ev := m.db.SaveBucketEventToSQL(ctx, b.ToBucketEvent(EventDiscontinueBucket))
 	return map[string][]interface{}{
-		k: v,
+		k:  v,
+		ek: ev,
 	}
 }
 
 func (m *Module) handleUpdateBucketInfo(ctx context.Context, block *tmctypes.ResultBlock, txHash, evmTxHash string, updateBucket *storagetypes.EventUpdateBucketInfo) map[string][]interface{} {
-	bucket := &models.Bucket{
+	b := &models.Bucket{
 		BucketName:                 updateBucket.BucketName,
 		BucketID:                   updateBucket.BucketId.BigInt().String(),
 		ChargedReadQuota:           updateBucket.ChargedReadQuota,
@@ -187,15 +180,16 @@ func (m *Module) handleUpdateBucketInfo(ctx context.Context, block *tmctypes.Res
 		UpdateEVMTxHash:            evmTxHash,
 		UpdateTime:                 block.Block.Time,
 	}
-
-	k, v := m.db.UpdateBucketToSQL(ctx, bucket)
+	k, v := m.db.UpdateBucketToSQL(ctx, b)
+	ek, ev := m.db.SaveBucketEventToSQL(ctx, b.ToBucketEvent(EventUpdateBucketInfo))
 	return map[string][]interface{}{
-		k: v,
+		k:  v,
+		ek: ev,
 	}
 }
 
 func (m *Module) handleEventMigrationBucket(ctx context.Context, block *tmctypes.ResultBlock, txHash, evmTxHash string, migrationBucket *storagetypes.EventMigrationBucket) map[string][]interface{} {
-	bucket := &models.Bucket{
+	b := &models.Bucket{
 		BucketID:        migrationBucket.BucketId.BigInt().String(),
 		BucketName:      migrationBucket.BucketName,
 		Status:          migrationBucket.Status.String(),
@@ -205,14 +199,16 @@ func (m *Module) handleEventMigrationBucket(ctx context.Context, block *tmctypes
 		UpdateTime:      block.Block.Time,
 	}
 
-	k, v := m.db.UpdateBucketToSQL(ctx, bucket)
+	k, v := m.db.UpdateBucketToSQL(ctx, b)
+	ek, ev := m.db.SaveBucketEventToSQL(ctx, b.ToBucketEvent(EventMigrationBucket))
 	return map[string][]interface{}{
-		k: v,
+		k:  v,
+		ek: ev,
 	}
 }
 
 func (m *Module) handleEventCancelMigrationBucket(ctx context.Context, block *tmctypes.ResultBlock, txHash, evmTxHash string, cancelMigrationBucket *storagetypes.EventCancelMigrationBucket) map[string][]interface{} {
-	bucket := &models.Bucket{
+	b := &models.Bucket{
 		BucketID:        cancelMigrationBucket.BucketId.BigInt().String(),
 		BucketName:      cancelMigrationBucket.BucketName,
 		Status:          cancelMigrationBucket.Status.String(),
@@ -221,15 +217,16 @@ func (m *Module) handleEventCancelMigrationBucket(ctx context.Context, block *tm
 		UpdateEVMTxHash: evmTxHash,
 		UpdateTime:      block.Block.Time,
 	}
-
-	k, v := m.db.UpdateBucketToSQL(ctx, bucket)
+	k, v := m.db.UpdateBucketToSQL(ctx, b)
+	ek, ev := m.db.SaveBucketEventToSQL(ctx, b.ToBucketEvent(EventCancelMigrationBucket))
 	return map[string][]interface{}{
-		k: v,
+		k:  v,
+		ek: ev,
 	}
 }
 
 func (m *Module) handleEventRejectMigrateBucket(ctx context.Context, block *tmctypes.ResultBlock, txHash, evmTxHash string, rejectMigrateBucket *storagetypes.EventRejectMigrateBucket) map[string][]interface{} {
-	bucket := &models.Bucket{
+	b := &models.Bucket{
 		BucketID:        rejectMigrateBucket.BucketId.BigInt().String(),
 		BucketName:      rejectMigrateBucket.BucketName,
 		Status:          rejectMigrateBucket.Status.String(),
@@ -238,15 +235,16 @@ func (m *Module) handleEventRejectMigrateBucket(ctx context.Context, block *tmct
 		UpdateEVMTxHash: evmTxHash,
 		UpdateTime:      block.Block.Time,
 	}
-
-	k, v := m.db.UpdateBucketToSQL(ctx, bucket)
+	k, v := m.db.UpdateBucketToSQL(ctx, b)
+	ek, ev := m.db.SaveBucketEventToSQL(ctx, b.ToBucketEvent(EventRejectMigrateBucket))
 	return map[string][]interface{}{
-		k: v,
+		k:  v,
+		ek: ev,
 	}
 }
 
 func (m *Module) handleCompleteMigrationBucket(ctx context.Context, block *tmctypes.ResultBlock, txHash, evmTxHash string, completeMigrationBucket *storagetypes.EventCompleteMigrationBucket) map[string][]interface{} {
-	bucket := &models.Bucket{
+	b := &models.Bucket{
 		BucketID:                   completeMigrationBucket.BucketId.BigInt().String(),
 		BucketName:                 completeMigrationBucket.BucketName,
 		GlobalVirtualGroupFamilyId: completeMigrationBucket.GlobalVirtualGroupFamilyId,
@@ -256,9 +254,10 @@ func (m *Module) handleCompleteMigrationBucket(ctx context.Context, block *tmcty
 		UpdateEVMTxHash:            evmTxHash,
 		UpdateTime:                 block.Block.Time,
 	}
-
-	k, v := m.db.UpdateBucketToSQL(ctx, bucket)
+	k, v := m.db.UpdateBucketToSQL(ctx, b)
+	ek, ev := m.db.SaveBucketEventToSQL(ctx, b.ToBucketEvent(EventCompleteMigrationBucket))
 	return map[string][]interface{}{
-		k: v,
+		k:  v,
+		ek: ev,
 	}
 }

@@ -1,6 +1,9 @@
 package models
 
-import "math/big"
+import (
+	"fmt"
+	"math/big"
+)
 
 type StorageProvider struct {
 	ID              uint64  `gorm:"column:id;primaryKey;autoIncrement"`
@@ -34,4 +37,14 @@ type StorageProvider struct {
 
 func (*StorageProvider) TableName() string {
 	return "storage_providers"
+}
+
+func (b *StorageProvider) ToSpEvent(e string) *SpEvent {
+	return &SpEvent{
+		SpID:      fmt.Sprintf("%d", b.SpID),
+		Height:    b.CreateAt,
+		TxHash:    b.CreateTxHash,
+		EVMTxHash: b.CreateEVMTxHash,
+		Event:     e,
+	}
 }

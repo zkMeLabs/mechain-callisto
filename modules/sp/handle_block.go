@@ -3,6 +3,7 @@ package sp
 import (
 	"context"
 	"errors"
+
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	abci "github.com/cometbft/cometbft/abci/types"
@@ -134,7 +135,7 @@ func (m *Module) ExtractGroupEventStatements(ctx context.Context, block *tmctype
 }
 
 func (m *Module) handleCreateStorageProvider(ctx context.Context, block *tmctypes.ResultBlock, txHash string, createStorageProvider *sptypes.EventCreateStorageProvider) map[string][]interface{} {
-	storageProvider := &models.StorageProvider{
+	sp := &models.StorageProvider{
 		SpID:            createStorageProvider.SpId,
 		OperatorAddress: createStorageProvider.SpAddress,
 		FundingAddress:  createStorageProvider.FundingAddress,
@@ -156,15 +157,16 @@ func (m *Module) handleCreateStorageProvider(ctx context.Context, block *tmctype
 		UpdateTxHash:    txHash,
 		Removed:         false,
 	}
-
-	k, v := m.db.CreateStorageProviderToSQL(ctx, storageProvider)
+	k, v := m.db.CreateStorageProviderToSQL(ctx, sp)
+	ek, ev := m.db.SaveSPEventToSQL(ctx, sp.ToSpEvent(EventCreateStorageProvider))
 	return map[string][]interface{}{
-		k: v,
+		k:  v,
+		ek: ev,
 	}
 }
 
 func (m *Module) handleEditStorageProvider(ctx context.Context, block *tmctypes.ResultBlock, txHash string, editStorageProvider *sptypes.EventEditStorageProvider) map[string][]interface{} {
-	storageProvider := &models.StorageProvider{
+	sp := &models.StorageProvider{
 		SpID:            editStorageProvider.SpId,
 		OperatorAddress: editStorageProvider.SpAddress,
 		SealAddress:     editStorageProvider.SealAddress,
@@ -177,47 +179,48 @@ func (m *Module) handleEditStorageProvider(ctx context.Context, block *tmctypes.
 		SecurityContact: editStorageProvider.Description.SecurityContact,
 		Details:         editStorageProvider.Description.Details,
 		BlsKey:          editStorageProvider.BlsKey,
-
-		UpdateAt:     block.Block.Height,
-		UpdateTxHash: txHash,
-		Removed:      false,
+		UpdateAt:        block.Block.Height,
+		UpdateTxHash:    txHash,
+		Removed:         false,
 	}
-
-	k, v := m.db.UpdateStorageProviderToSQL(ctx, storageProvider)
+	k, v := m.db.UpdateStorageProviderToSQL(ctx, sp)
+	ek, ev := m.db.SaveSPEventToSQL(ctx, sp.ToSpEvent(EventEditStorageProvider))
 	return map[string][]interface{}{
-		k: v,
+		k:  v,
+		ek: ev,
 	}
 }
 
 func (m *Module) handleSpStoragePriceUpdate(ctx context.Context, block *tmctypes.ResultBlock, txHash string, spStoragePriceUpdate *sptypes.EventSpStoragePriceUpdate) map[string][]interface{} {
-	storageProvider := &models.StorageProvider{
+	sp := &models.StorageProvider{
 		SpID:          spStoragePriceUpdate.SpId,
 		UpdateTimeSec: spStoragePriceUpdate.UpdateTimeSec,
 		ReadPrice:     *spStoragePriceUpdate.ReadPrice.BigInt(),
 		FreeReadQuota: spStoragePriceUpdate.FreeReadQuota,
 		StorePrice:    *spStoragePriceUpdate.StorePrice.BigInt(),
-
-		UpdateAt:     block.Block.Height,
-		UpdateTxHash: txHash,
-		Removed:      false,
+		UpdateAt:      block.Block.Height,
+		UpdateTxHash:  txHash,
+		Removed:       false,
 	}
-
-	k, v := m.db.UpdateStorageProviderToSQL(ctx, storageProvider)
+	k, v := m.db.UpdateStorageProviderToSQL(ctx, sp)
+	ek, ev := m.db.SaveSPEventToSQL(ctx, sp.ToSpEvent(EventSpStoragePriceUpdate))
 	return map[string][]interface{}{
-		k: v,
+		k:  v,
+		ek: ev,
 	}
 }
 
 func (m *Module) handleCompleteStorageProviderExit(ctx context.Context, block *tmctypes.ResultBlock, txHash string, completeStorageProviderExit *vgtypes.EventCompleteStorageProviderExit) map[string][]interface{} {
-	data := &models.StorageProvider{
-		SpID: completeStorageProviderExit.StorageProviderId,
-
+	sp := &models.StorageProvider{
+		SpID:         completeStorageProviderExit.StorageProviderId,
 		UpdateAt:     block.Block.Height,
 		UpdateTxHash: txHash,
 		Removed:      true,
 	}
-	k, v := m.db.UpdateStorageProviderToSQL(ctx, data)
+	k, v := m.db.UpdateStorageProviderToSQL(ctx, sp)
+	ek, ev := m.db.SaveSPEventToSQL(ctx, sp.ToSpEvent(EventCompleteSpExit))
 	return map[string][]interface{}{
-		k: v,
+		k:  v,
+		ek: ev,
 	}
 }
