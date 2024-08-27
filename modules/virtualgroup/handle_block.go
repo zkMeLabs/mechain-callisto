@@ -198,7 +198,7 @@ func (m *Module) handleCreateGlobalVirtualGroup(ctx context.Context, block *tmct
 		SecondarySpIDs:        createGlobalVirtualGroup.SecondarySpIds,
 		StoredSize:            createGlobalVirtualGroup.StoredSize,
 		VirtualPaymentAddress: createGlobalVirtualGroup.VirtualPaymentAddress,
-		TotalDeposit:          *createGlobalVirtualGroup.TotalDeposit.BigInt(),
+		TotalDeposit:          createGlobalVirtualGroup.TotalDeposit.BigInt().Uint64(),
 		CreateAt:              block.Block.Height,
 		CreateTxHash:          txHash,
 		CreateTime:            block.Block.Time,
@@ -232,7 +232,7 @@ func (m *Module) handleUpdateGlobalVirtualGroup(ctx context.Context, block *tmct
 	gvgGroup := &models.GlobalVirtualGroup{
 		GlobalVirtualGroupID: updateGlobalVirtualGroup.Id,
 		StoredSize:           updateGlobalVirtualGroup.StoreSize,
-		TotalDeposit:         *updateGlobalVirtualGroup.TotalDeposit.BigInt(),
+		TotalDeposit:         updateGlobalVirtualGroup.TotalDeposit.BigInt().Uint64(),
 		PrimarySpID:          updateGlobalVirtualGroup.PrimarySpId,
 		SecondarySpIDs:       updateGlobalVirtualGroup.SecondarySpIds,
 		UpdateAt:             block.Block.Height,

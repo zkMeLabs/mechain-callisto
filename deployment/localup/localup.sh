@@ -13,7 +13,7 @@ function stop() {
 function start() {
     docker compose up -d
     echo "wait 30s for graphql engine start..."
-    for ((i = 30; i > 0; i -= 3)); do
+    for ((i = 40; i > 0; i -= 3)); do
         echo "please wait ${i}s..."
         sleep 3
     done

@@ -1,7 +1,6 @@
 package models
 
 import (
-	"math/big"
 	"time"
 )
 
@@ -13,7 +12,7 @@ type GlobalVirtualGroup struct {
 	SecondarySpIDs        []uint32  `gorm:"column:secondary_sp_ids;type:TEXT"`
 	StoredSize            uint64    `gorm:"column:stored_size"`
 	VirtualPaymentAddress string    `gorm:"column:virtual_payment_address;type:TEXT"`
-	TotalDeposit          big.Int   `gorm:"column:total_deposit"`
+	TotalDeposit          uint64    `gorm:"column:total_deposit"`
 	CreateAt              int64     `gorm:"column:create_at"`
 	CreateTxHash          string    `gorm:"column:create_tx_hash;type:TEXT;not null"`
 	CreateEVMTxHash       string    `gorm:"column:create_evm_tx_hash;type:TEXT;not null"`
