@@ -120,8 +120,19 @@ func (m *Module) handleCreateBucket(ctx context.Context, block *tmctypes.ResultB
 		UpdateTime:                 block.Block.Time,
 	}
 	k, v := m.db.SaveBucketToSQL(ctx, bucket)
+
+	bucketEvent := &models.BucketEvent{
+		BucketID:  bucket.BucketID,
+		Height:    bucket.CreateAt,
+		TxHash:    bucket.CreateTxHash,
+		EVMTxHash: bucket.CreateEVMTxHash,
+		Event:     EventCreateBucket,
+	}
+	k1, v1 := m.db.SaveBucketEventToSQL(ctx, bucketEvent)
+
 	return map[string][]interface{}{
-		k: v,
+		k:  v,
+		k1: v1,
 	}
 }
 
