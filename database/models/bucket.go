@@ -39,3 +39,13 @@ type Bucket struct {
 func (*Bucket) TableName() string {
 	return "buckets"
 }
+
+func (b *Bucket) ToBucketEvent(e string) *BucketEvent {
+	return &BucketEvent{
+		BucketID:  b.BucketID,
+		Height:    b.CreateAt,
+		TxHash:    b.CreateTxHash,
+		EVMTxHash: b.CreateEVMTxHash,
+		Event:     e,
+	}
+}

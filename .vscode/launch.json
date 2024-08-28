@@ -11,7 +11,8 @@
       "mode": "auto",
       "program": "${workspaceFolder}/cmd/bdjuno",
       "args": ["start", "--home", "${workspaceFolder}/deployment/localup"],
-      "cwd": "${workspaceFolder}/deployment/localup"
+      "cwd": "${workspaceFolder}/deployment/localup",
+      "preLaunchTask": "build"
     },
     {
       "name": " devnet",
@@ -20,7 +21,8 @@
       "mode": "auto",
       "program": "${workspaceFolder}/cmd/bdjuno",
       "args": ["start", "--home", "${workspaceFolder}/deployment/devnetup"],
-      "cwd": "${workspaceFolder}/deployment/devnetup"
+      "cwd": "${workspaceFolder}/deployment/devnetup",
+      "preLaunchTask": "build"
     }
   ]
 }

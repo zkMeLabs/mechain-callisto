@@ -4,6 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/forbole/bdjuno/v4/database"
 	"github.com/forbole/bdjuno/v4/modules/storage/source"
+	vgsource "github.com/forbole/bdjuno/v4/modules/virtualgroup/source"
 	"github.com/forbole/juno/v5/modules"
 )
 
@@ -14,17 +15,19 @@ var (
 
 // Module represents the x/distr module
 type Module struct {
-	source source.Source
-	cdc    codec.Codec
-	db     *database.DB
+	source   source.Source
+	vgSource vgsource.Source
+	cdc      codec.Codec
+	db       *database.DB
 }
 
 // NewModule returns a new Module instance
-func NewModule(source source.Source, cdc codec.Codec, db *database.DB) *Module {
+func NewModule(source source.Source, vgSource vgsource.Source, cdc codec.Codec, db *database.DB) *Module {
 	return &Module{
-		source: source,
-		cdc:    cdc,
-		db:     db,
+		source:   source,
+		vgSource: vgSource,
+		cdc:      cdc,
+		db:       db,
 	}
 }
 

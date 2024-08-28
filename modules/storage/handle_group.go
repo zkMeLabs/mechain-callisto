@@ -72,7 +72,7 @@ func (m *Module) ExtractGroupEventStatements(ctx context.Context, block *tmctype
 
 func (m *Module) handleCreateGroup(ctx context.Context, block *tmctypes.ResultBlock, txHash, evmTxHash string, createGroup *storagetypes.EventCreateGroup) map[string][]interface{} {
 	var membersToAddList []*models.Group
-	groupItem := &models.Group{
+	g := &models.Group{
 		OwnerAddress:    createGroup.Owner,
 		GroupID:         createGroup.GroupId.BigInt().String(),
 		GroupName:       createGroup.GroupName,
@@ -88,15 +88,17 @@ func (m *Module) handleCreateGroup(ctx context.Context, block *tmctypes.ResultBl
 		UpdateEVMTxHash: evmTxHash,
 		Removed:         false,
 	}
-	membersToAddList = append(membersToAddList, groupItem)
+	membersToAddList = append(membersToAddList, g)
 	k, v := m.db.CreateGroupToSQL(ctx, membersToAddList)
+	ek, ev := m.db.SaveGroupEventToSQL(ctx, g.ToBucketEvent(EventCreateGroup))
 	return map[string][]interface{}{
-		k: v,
+		k:  v,
+		ek: ev,
 	}
 }
 
 func (m *Module) handleDeleteGroup(ctx context.Context, block *tmctypes.ResultBlock, txHash, evmTxHash string, deleteGroup *storagetypes.EventDeleteGroup) map[string][]interface{} {
-	group := &models.Group{
+	g := &models.Group{
 		OwnerAddress:    deleteGroup.Owner,
 		GroupID:         deleteGroup.GroupId.BigInt().String(),
 		GroupName:       deleteGroup.GroupName,
@@ -106,14 +108,16 @@ func (m *Module) handleDeleteGroup(ctx context.Context, block *tmctypes.ResultBl
 		UpdateEVMTxHash: evmTxHash,
 		Removed:         true,
 	}
-	res := make(map[string][]interface{})
-	k, v := m.db.DeleteGroupToSQL(ctx, group)
-	res[k] = v
-	return res
+	k, v := m.db.DeleteGroupToSQL(ctx, g)
+	ek, ev := m.db.SaveGroupEventToSQL(ctx, g.ToBucketEvent(EventCreateGroup))
+	return map[string][]interface{}{
+		k:  v,
+		ek: ev,
+	}
 }
 
 func (m *Module) handleLeaveGroup(ctx context.Context, block *tmctypes.ResultBlock, txHash, evmTxHash string, leaveGroup *storagetypes.EventLeaveGroup) map[string][]interface{} {
-	group := &models.Group{
+	g := &models.Group{
 		OwnerAddress:    leaveGroup.Owner,
 		GroupID:         leaveGroup.GroupId.BigInt().String(),
 		GroupName:       leaveGroup.GroupName,
@@ -124,21 +128,12 @@ func (m *Module) handleLeaveGroup(ctx context.Context, block *tmctypes.ResultBlo
 		UpdateEVMTxHash: evmTxHash,
 		Removed:         true,
 	}
-
-	// update group item
-	groupItem := &models.Group{
-		GroupID:    leaveGroup.GroupId.BigInt().String(),
-		UpdateAt:   block.Block.Height,
-		UpdateTime: block.Block.Time,
-		Removed:    false,
+	k, v := m.db.UpdateGroupToSQL(ctx, g)
+	ek, ev := m.db.SaveGroupEventToSQL(ctx, g.ToBucketEvent(EventCreateGroup))
+	return map[string][]interface{}{
+		k:  v,
+		ek: ev,
 	}
-	res := make(map[string][]interface{})
-	k, v := m.db.UpdateGroupToSQL(ctx, groupItem)
-	res[k] = v
-
-	k, v = m.db.UpdateGroupToSQL(ctx, group)
-	res[k] = v
-	return res
 }
 
 func (m *Module) handleUpdateGroupMember(ctx context.Context, block *tmctypes.ResultBlock, txHash, evmTxHash string, updateGroupMember *storagetypes.EventUpdateGroupMember) map[string][]interface{} {
@@ -203,7 +198,8 @@ func (m *Module) handleUpdateGroupMember(ctx context.Context, block *tmctypes.Re
 	}
 	k, v := m.db.UpdateGroupToSQL(ctx, groupItem)
 	res[k] = v
-
+	ek, ev := m.db.SaveGroupEventToSQL(ctx, groupItem.ToBucketEvent(EventUpdateGroupMember))
+	res[ek] = ev
 	return res
 }
 
@@ -218,6 +214,14 @@ func (m *Module) handleRenewGroupMember(ctx context.Context, block *tmctypes.Res
 		v := []interface{}{expirationTime, block.Block.Height, block.Block.Time, renewGroupMember.GroupId.BigInt().String()}
 		res[k] = v
 	}
-
+	e := &models.GroupEvent{
+		GroupID:   renewGroupMember.GroupId.BigInt().String(),
+		Height:    block.Block.Height,
+		TxHash:    txHash,
+		EVMTxHash: evmTxHash,
+		Event:     EventRenewGroupMember,
+	}
+	ek, ev := m.db.SaveGroupEventToSQL(ctx, e)
+	res[ek] = ev
 	return res
 }

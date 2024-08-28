@@ -47,3 +47,13 @@ type Object struct {
 func (*Object) TableName() string {
 	return "objects"
 }
+
+func (b *Object) ToObjectEvent(e string) *ObjectEvent {
+	return &ObjectEvent{
+		ObjectID:  b.BucketID,
+		Height:    b.CreateAt,
+		TxHash:    b.CreateTxHash,
+		EVMTxHash: b.CreateEVMTxHash,
+		Event:     e,
+	}
+}

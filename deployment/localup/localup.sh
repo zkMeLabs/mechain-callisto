@@ -7,6 +7,7 @@ bin=${project_path}/build/${bin_name}
 function stop() {
     docker compose down
     rm -rf "${basedir}"/data
+    rm -rf "${basedir}"/bdjuno.log
     ps -ef | grep "${bin_name}" | awk '{print $2}' | xargs kill
 }
 
@@ -25,7 +26,7 @@ function start() {
     # ${bin} --home "${basedir}" parse genesis-file --genesis-file-path ./genesis.json
 
     # echo "run BDjuno...."
-    # # nohup "${bin}" start --home "${basedir}" >"${basedir}"/bdjuno.log 2>&1 &
+    # nohup "${bin}" start --home "${basedir}" >"${basedir}"/bdjuno.log 2>&1 &
     # "${bin}" --home "${basedir}" start >"${basedir}"/bdjuno.log
 }
 

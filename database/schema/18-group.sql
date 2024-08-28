@@ -18,8 +18,7 @@ CREATE TABLE groups (
     update_evm_tx_hash TEXT NOT NULL,
     removed BOOLEAN DEFAULT FALSE,
     tags JSONB,
-    UNIQUE (group_id),
-    UNIQUE (group_id, account_address)
+    UNIQUE (group_id)
 );
 CREATE INDEX idx_group_owner ON "groups"(owner_address);
 CREATE INDEX idx_group_group_id ON "groups"(group_id);

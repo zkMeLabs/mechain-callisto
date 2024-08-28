@@ -18,7 +18,7 @@ func (db *DB) UpdateGroup(ctx context.Context, group *models.Group) error {
 
 func (db *DB) CreateGroupToSQL(ctx context.Context, groupMembers []*models.Group) (string, []interface{}) {
 	stat := db.G.Session(&gorm.Session{DryRun: true}).Table((&models.Group{}).TableName()).Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "account_address"}, {Name: "group_id"}},
+		Columns:   []clause.Column{{Name: "group_id"}},
 		UpdateAll: true,
 	}).Create(groupMembers).Statement
 	return stat.SQL.String(), stat.Vars

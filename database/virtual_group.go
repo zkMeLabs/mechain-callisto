@@ -80,7 +80,7 @@ func (db *DB) DeleteLVGToSQL(ctx context.Context, lvg *models.LocalVirtualGroup)
 	return stat.SQL.String(), stat.Vars
 }
 
-func (db *DB) SaveVGFToSQL(ctx context.Context, vgf *models.GlobalVirtualGroupFamily) (string, []interface{}) {
+func (db *DB) SaveGVGFToSQL(ctx context.Context, vgf *models.GlobalVirtualGroupFamily) (string, []interface{}) {
 	stat := db.G.Session(&gorm.Session{DryRun: true}).Table((&models.GlobalVirtualGroupFamily{}).TableName()).Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "global_virtual_group_family_id"}},
 		UpdateAll: true,
@@ -89,6 +89,6 @@ func (db *DB) SaveVGFToSQL(ctx context.Context, vgf *models.GlobalVirtualGroupFa
 }
 
 func (db *DB) UpdateVGFToSQL(ctx context.Context, vgf *models.GlobalVirtualGroupFamily) (string, []interface{}) {
-	stat := db.G.Session(&gorm.Session{DryRun: true}).Table((&models.GlobalVirtualGroupFamily{}).TableName()).Where("global_virtual_group_family_id = ?", vgf.GlobalVirtualGroupFamilyId).Updates(vgf).Statement
+	stat := db.G.Session(&gorm.Session{DryRun: true}).Table((&models.GlobalVirtualGroupFamily{}).TableName()).Where("global_virtual_group_family_id = ?", vgf.GlobalVirtualGroupFamilyID).Updates(vgf).Statement
 	return stat.SQL.String(), stat.Vars
 }

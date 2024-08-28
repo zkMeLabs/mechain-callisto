@@ -27,8 +27,8 @@ node:
       address: 154.48.244.41:9090
       insecure: true
 parsing:
-  workers: 1
-  start_height: 70174
+  workers: 5
+  start_height: 1
   average_block_time: 1s
   listen_new_blocks: true
   parse_old_blocks: true
