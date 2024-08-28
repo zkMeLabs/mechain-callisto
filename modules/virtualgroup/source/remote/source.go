@@ -1,6 +1,8 @@
 package remote
 
 import (
+	"context"
+
 	"github.com/forbole/bdjuno/v4/modules/virtualgroup/source"
 	"github.com/forbole/bdjuno/v4/modules/virtualgroup/types"
 	"github.com/forbole/juno/v5/node/remote"
@@ -22,16 +24,16 @@ func NewSource(source *remote.Source, cli types.QueryClient) *Source {
 	}
 }
 
-func (s Source) GlobalVirtualGroup(height int64, globalVirtualGroupID uint32) (types.GlobalVirtualGroup, error) {
+func (s Source) GlobalVirtualGroup(height int64, globalVirtualGroupID uint32) (*types.GlobalVirtualGroup, error) {
 	res, err := s.Cli.GlobalVirtualGroup(
 		remote.GetHeightRequestContext(s.Ctx, height),
 		&types.QueryGlobalVirtualGroupRequest{GlobalVirtualGroupId: globalVirtualGroupID},
 	)
 	if err != nil {
-		return types.GlobalVirtualGroup{}, err
+		return nil, err
 	}
 
-	return *res.GlobalVirtualGroup, nil
+	return res.GlobalVirtualGroup, nil
 }
 
 func (s Source) GlobalVirtualGroupByFamilyID(height int64, globalVirtualGroupFamilyID uint32) ([]*types.GlobalVirtualGroup, error) {
@@ -46,14 +48,24 @@ func (s Source) GlobalVirtualGroupByFamilyID(height int64, globalVirtualGroupFam
 	return res.GlobalVirtualGroups, nil
 }
 
-func (s Source) GlobalVirtualGroupFamily(height int64, familyID uint32) (types.GlobalVirtualGroupFamily, error) {
+func (s Source) GlobalVirtualGroupFamily(height int64, familyID uint32) (*types.GlobalVirtualGroupFamily, error) {
 	res, err := s.Cli.GlobalVirtualGroupFamily(
 		remote.GetHeightRequestContext(s.Ctx, height),
 		&types.QueryGlobalVirtualGroupFamilyRequest{FamilyId: familyID},
 	)
 	if err != nil {
-		return types.GlobalVirtualGroupFamily{}, err
+		return nil, err
 	}
+	return res.GlobalVirtualGroupFamily, nil
+}
 
-	return *res.GlobalVirtualGroupFamily, nil
+func (s *Source) GlobalVirtualGroupFamilies(height int64, ctx context.Context) ([]*types.GlobalVirtualGroupFamily, error) {
+	res, err := s.Cli.GlobalVirtualGroupFamilies(
+		remote.GetHeightRequestContext(s.Ctx, height),
+		&types.QueryGlobalVirtualGroupFamiliesRequest{},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return res.GvgFamilies, nil
 }

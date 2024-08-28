@@ -125,7 +125,7 @@ func (m *Module) handleCreateStorageProvider(ctx context.Context, block *tmctype
 		SealAddress:     createStorageProvider.SealAddress,
 		ApprovalAddress: createStorageProvider.ApprovalAddress,
 		GcAddress:       createStorageProvider.GcAddress,
-		TotalDeposit:    *createStorageProvider.TotalDeposit.Amount.BigInt(),
+		TotalDeposit:    createStorageProvider.TotalDeposit.Amount.BigInt().Uint64(),
 		Status:          createStorageProvider.Status.String(),
 		Endpoint:        createStorageProvider.Endpoint,
 		Moniker:         createStorageProvider.Description.Moniker,
@@ -177,9 +177,9 @@ func (m *Module) handleSpStoragePriceUpdate(ctx context.Context, block *tmctypes
 	storageProvider := &models.StorageProvider{
 		SpID:          spStoragePriceUpdate.SpId,
 		UpdateTimeSec: spStoragePriceUpdate.UpdateTimeSec,
-		ReadPrice:     *spStoragePriceUpdate.ReadPrice.BigInt(),
+		ReadPrice:     spStoragePriceUpdate.ReadPrice.BigInt().Uint64(),
 		FreeReadQuota: spStoragePriceUpdate.FreeReadQuota,
-		StorePrice:    *spStoragePriceUpdate.StorePrice.BigInt(),
+		StorePrice:    spStoragePriceUpdate.StorePrice.BigInt().Uint64(),
 
 		UpdateAt:     block.Block.Height,
 		UpdateTxHash: txHash,

@@ -41,7 +41,7 @@ func (*GroupEvent) TableName() string {
 
 type SpEvent struct {
 	ID        uint64 `gorm:"id;type:bigint(64);primaryKey;autoIncrement"`
-	SpID      string `gorm:"group_id;type:varchar(64);not null"`
+	SpID      string `gorm:"sp_id;type:varchar(64);not null"`
 	Height    int64  `gorm:"column:height;not null"`
 	TxHash    string `gorm:"column:tx_hash;type:TEXT;not null"`
 	EVMTxHash string `gorm:"column:evm_tx_hash;type:TEXT;not null"`

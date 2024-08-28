@@ -193,9 +193,9 @@ func (m *Module) handleUpdateLocalVirtualGroup(ctx context.Context, block *tmcty
 func (m *Module) handleCreateGlobalVirtualGroup(ctx context.Context, block *tmctypes.ResultBlock, txHash string, createGlobalVirtualGroup *vgtypes.EventCreateGlobalVirtualGroup) map[string][]interface{} {
 	gvgGroup := &models.GlobalVirtualGroup{
 		GlobalVirtualGroupID:  createGlobalVirtualGroup.Id,
-		FamilyId:              createGlobalVirtualGroup.FamilyId,
+		FamilyID:              createGlobalVirtualGroup.FamilyId,
 		PrimarySpID:           createGlobalVirtualGroup.PrimarySpId,
-		SecondarySpIDs:        createGlobalVirtualGroup.SecondarySpIds,
+		SecondarySpIDs:        models.ConvertUint32ToInt32Array(createGlobalVirtualGroup.SecondarySpIds),
 		StoredSize:            createGlobalVirtualGroup.StoredSize,
 		VirtualPaymentAddress: createGlobalVirtualGroup.VirtualPaymentAddress,
 		TotalDeposit:          createGlobalVirtualGroup.TotalDeposit.BigInt().Uint64(),
@@ -234,7 +234,7 @@ func (m *Module) handleUpdateGlobalVirtualGroup(ctx context.Context, block *tmct
 		StoredSize:           updateGlobalVirtualGroup.StoreSize,
 		TotalDeposit:         updateGlobalVirtualGroup.TotalDeposit.BigInt().Uint64(),
 		PrimarySpID:          updateGlobalVirtualGroup.PrimarySpId,
-		SecondarySpIDs:       updateGlobalVirtualGroup.SecondarySpIds,
+		SecondarySpIDs:       models.ConvertUint32ToInt32Array(updateGlobalVirtualGroup.SecondarySpIds),
 		UpdateAt:             block.Block.Height,
 		UpdateTxHash:         txHash,
 		UpdateTime:           block.Block.Time,
@@ -248,10 +248,10 @@ func (m *Module) handleUpdateGlobalVirtualGroup(ctx context.Context, block *tmct
 
 func (m *Module) handleCreateGlobalVirtualGroupFamily(ctx context.Context, block *tmctypes.ResultBlock, txHash string, createGlobalVirtualGroupFamily *vgtypes.EventCreateGlobalVirtualGroupFamily) map[string][]interface{} {
 	vgfGroup := &models.GlobalVirtualGroupFamily{
-		GlobalVirtualGroupFamilyId: createGlobalVirtualGroupFamily.Id,
+		GlobalVirtualGroupFamilyID: createGlobalVirtualGroupFamily.Id,
 		PrimarySpID:                createGlobalVirtualGroupFamily.PrimarySpId,
 		VirtualPaymentAddress:      createGlobalVirtualGroupFamily.VirtualPaymentAddress,
-		GlobalVirtualGroupIDs:      createGlobalVirtualGroupFamily.GlobalVirtualGroupIds,
+		GlobalVirtualGroupIDs:      models.ConvertUint32ToInt32Array(createGlobalVirtualGroupFamily.GlobalVirtualGroupIds),
 		CreateAt:                   block.Block.Height,
 		CreateTxHash:               txHash,
 		CreateTime:                 block.Block.Time,
@@ -260,7 +260,7 @@ func (m *Module) handleCreateGlobalVirtualGroupFamily(ctx context.Context, block
 		UpdateTime:                 block.Block.Time,
 		Removed:                    false,
 	}
-	k, v := m.db.SaveVGFToSQL(ctx, vgfGroup)
+	k, v := m.db.SaveGVGFToSQL(ctx, vgfGroup)
 	return map[string][]interface{}{
 		k: v,
 	}
@@ -283,7 +283,7 @@ func (m *Module) handleDeleteLocalVirtualGroup(ctx context.Context, block *tmcty
 
 func (m *Module) handleDeleteGlobalVirtualGroupFamily(ctx context.Context, block *tmctypes.ResultBlock, txHash string, deleteGlobalVirtualGroupFamily *vgtypes.EventDeleteGlobalVirtualGroupFamily) map[string][]interface{} {
 	vg := &models.GlobalVirtualGroupFamily{
-		GlobalVirtualGroupFamilyId: deleteGlobalVirtualGroupFamily.Id,
+		GlobalVirtualGroupFamilyID: deleteGlobalVirtualGroupFamily.Id,
 		Removed:                    true,
 		UpdateAt:                   block.Block.Height,
 		UpdateTxHash:               txHash,
@@ -297,9 +297,9 @@ func (m *Module) handleDeleteGlobalVirtualGroupFamily(ctx context.Context, block
 
 func (m *Module) handleUpdateGlobalVirtualGroupFamily(ctx context.Context, block *tmctypes.ResultBlock, txHash string, updateGlobalVirtualGroupFamily *vgtypes.EventUpdateGlobalVirtualGroupFamily) map[string][]interface{} {
 	vg := &models.GlobalVirtualGroupFamily{
-		GlobalVirtualGroupFamilyId: updateGlobalVirtualGroupFamily.Id,
+		GlobalVirtualGroupFamilyID: updateGlobalVirtualGroupFamily.Id,
 		PrimarySpID:                updateGlobalVirtualGroupFamily.PrimarySpId,
-		GlobalVirtualGroupIDs:      updateGlobalVirtualGroupFamily.GlobalVirtualGroupIds,
+		GlobalVirtualGroupIDs:      models.ConvertUint32ToInt32Array(updateGlobalVirtualGroupFamily.GlobalVirtualGroupIds),
 		UpdateAt:                   block.Block.Height,
 		UpdateTxHash:               txHash,
 		UpdateTime:                 block.Block.Time,

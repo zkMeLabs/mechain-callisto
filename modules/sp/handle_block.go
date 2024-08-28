@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 
-	"github.com/cosmos/cosmos-sdk/types/query"
-
 	abci "github.com/cometbft/cometbft/abci/types"
 	tmctypes "github.com/cometbft/cometbft/rpc/core/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -35,21 +33,6 @@ var StorageProviderEvents = map[string]bool{
 func (m *Module) HandleBlock(
 	block *tmctypes.ResultBlock, results *tmctypes.ResultBlockResults, txs []*junotypes.Tx, vals *tmctypes.ResultValidators,
 ) error {
-	// actual use "block.Block.Height == 1"
-	if block.Block.Height%10 == 0 {
-		req := query.PageRequest{
-			Key:        nil,
-			Offset:     0,
-			Limit:      100,
-			CountTotal: false,
-			Reverse:    false,
-		}
-		sps, pageResponse, err := m.source.StorageProviders(block.Block.Height, req) // actual use 1 instead of block.Block.Height
-		if err == nil && len(sps) > 0 {
-			log.Error().Str("module", "sp").Str("page response", pageResponse.String()).Str("first storage provide", sps[0].String())
-		}
-	}
-
 	ctx := context.Background()
 	statements, err := m.ExportEventsInTxs(ctx, block, txs)
 	if err != nil {
@@ -142,7 +125,7 @@ func (m *Module) handleCreateStorageProvider(ctx context.Context, block *tmctype
 		SealAddress:     createStorageProvider.SealAddress,
 		ApprovalAddress: createStorageProvider.ApprovalAddress,
 		GcAddress:       createStorageProvider.GcAddress,
-		TotalDeposit:    *createStorageProvider.TotalDeposit.Amount.BigInt(),
+		TotalDeposit:    createStorageProvider.TotalDeposit.Amount.BigInt().Uint64(),
 		Status:          createStorageProvider.Status.String(),
 		Endpoint:        createStorageProvider.Endpoint,
 		Moniker:         createStorageProvider.Description.Moniker,
@@ -195,9 +178,9 @@ func (m *Module) handleSpStoragePriceUpdate(ctx context.Context, block *tmctypes
 	sp := &models.StorageProvider{
 		SpID:          spStoragePriceUpdate.SpId,
 		UpdateTimeSec: spStoragePriceUpdate.UpdateTimeSec,
-		ReadPrice:     *spStoragePriceUpdate.ReadPrice.BigInt(),
+		ReadPrice:     spStoragePriceUpdate.ReadPrice.BigInt().Uint64(),
 		FreeReadQuota: spStoragePriceUpdate.FreeReadQuota,
-		StorePrice:    *spStoragePriceUpdate.StorePrice.BigInt(),
+		StorePrice:    spStoragePriceUpdate.StorePrice.BigInt().Uint64(),
 		UpdateAt:      block.Block.Height,
 		UpdateTxHash:  txHash,
 		Removed:       false,

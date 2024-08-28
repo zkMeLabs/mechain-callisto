@@ -11,6 +11,7 @@ import (
 	"github.com/cosmos/gogoproto/proto"
 	"github.com/forbole/bdjuno/v4/database/models"
 	storagetypes "github.com/forbole/bdjuno/v4/modules/storage/types"
+	"github.com/rs/zerolog/log"
 )
 
 var (
@@ -98,6 +99,47 @@ func (m *Module) ExtractBucketEventStatements(ctx context.Context, block *tmctyp
 }
 
 func (m *Module) handleCreateBucket(ctx context.Context, block *tmctypes.ResultBlock, txHash, evmTxHash string, createBucket *storagetypes.EventCreateBucket) map[string][]interface{} {
+	gvgFamilies, err := m.vgSource.GlobalVirtualGroupFamilies(block.Block.Height, context.Background())
+	if err != nil {
+		return nil
+	}
+
+	for _, gvgf := range gvgFamilies {
+		s := &models.GlobalVirtualGroupFamily{
+			GlobalVirtualGroupFamilyID: gvgf.Id,
+			PrimarySpID:                gvgf.PrimarySpId,
+			GlobalVirtualGroupIDs:      models.ConvertUint32ToInt32Array(gvgf.GlobalVirtualGroupIds),
+			VirtualPaymentAddress:      gvgf.VirtualPaymentAddress,
+			CreateAt:                   1,
+		}
+		k, v := m.db.SaveGVGFToSQL(ctx, s)
+		if err := m.db.ExecuteStatements(map[string][]interface{}{k: v}); err != nil {
+			log.Err(err).Msg("failed to save global virtual group family")
+			continue
+		}
+		gvgs, err := m.vgSource.GlobalVirtualGroupByFamilyID(block.Block.Height, gvgf.Id)
+		if err != nil {
+			log.Err(err).Msg("failed to get global virtual group by family id")
+			continue
+		}
+		for _, gvg := range gvgs {
+			g := &models.GlobalVirtualGroup{
+				GlobalVirtualGroupID:  gvg.Id,
+				FamilyID:              gvg.FamilyId,
+				PrimarySpID:           gvg.PrimarySpId,
+				SecondarySpIDs:        models.ConvertUint32ToInt32Array(gvg.SecondarySpIds),
+				StoredSize:            gvg.StoredSize,
+				VirtualPaymentAddress: gvg.VirtualPaymentAddress,
+				TotalDeposit:          gvg.TotalDeposit.BigInt().Uint64(),
+			}
+			k, v := m.db.SaveGVGToSQL(ctx, g)
+			if err := m.db.ExecuteStatements(map[string][]interface{}{k: v}); err != nil {
+				log.Err(err).Msg("failed to save global virtual group")
+				continue
+			}
+		}
+	}
+
 	b := &models.Bucket{
 		BucketID:                   createBucket.BucketId.BigInt().String(),
 		BucketName:                 createBucket.BucketName,

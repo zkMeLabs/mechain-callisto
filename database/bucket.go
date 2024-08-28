@@ -45,7 +45,7 @@ func (db *DB) BatchUpdateBucketSize(ctx context.Context, buckets []*models.Bucke
 
 func (db *DB) UpdateStorageSizeToSQL(ctx context.Context, objectID, bucketName, operation string) (string, []interface{}) {
 	tableName := (&models.Object{}).TableName()
-	sql := `UPDATE buckets SET storage_size = storage_size %s CAST((SELECT payload_size FROM %s WHERE object_id = ?), DECIMAL(65,0)) WHERE bucket_name = ?`
+	sql := `UPDATE buckets SET storage_size = storage_size %s CAST((SELECT payload_size FROM %s WHERE object_id = ?) AS DECIMAL(65,0)) WHERE bucket_name = ?`
 	vars := []interface{}{objectID, bucketName}
 	finalSQL := fmt.Sprintf(sql, operation, tableName)
 	return finalSQL, vars
