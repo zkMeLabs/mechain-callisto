@@ -1,18 +1,18 @@
 #!/bin/bash
-basedir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 project_path=$(git rev-parse --show-toplevel)
 bin_name=bdjuno
 bin=${project_path}/build/${bin_name}
 
 function stop() {
-    docker compose -f "${basedir}"/docker-compose.yaml down
-    rm -rf "${basedir}"/data
-    rm -rf "${basedir}"/bdjuno.log
+    docker compose -f "${script_dir}"/docker-compose.yaml down
+    rm -rf "${script_dir}"/data
+    rm -rf "${script_dir}"/bdjuno.log
     ps -ef | grep "${bin_name}" | awk '{print $2}' | xargs kill
 }
 
 function start() {
-    docker compose -f "${basedir}"/docker-compose.yaml up -d
+    docker compose -f "${script_dir}"/docker-compose.yaml up -d
     echo "wait 30s for graphql engine start..."
     for ((i = 30; i > 0; i -= 3)); do
         echo "please wait ${i}s..."
@@ -23,11 +23,11 @@ function start() {
     hasura metadata apply --project "${project_path}"/hasura --endpoint http://localhost:8080 --admin-secret mechain
 
     # echo "Initializing the configuration..."
-    # ${bin} --home "${basedir}" parse genesis-file --genesis-file-path ./genesis.json
+    # ${bin} --home "${script_dir}" parse genesis-file --genesis-file-path ./genesis.json
 
     # echo "run BDjuno...."
-    # nohup "${bin}" start --home "${basedir}" >"${basedir}"/bdjuno.log 2>&1 &
-    # "${bin}" --home "${basedir}" start >"${basedir}"/bdjuno.log
+    # nohup "${bin}" start --home "${script_dir}" >"${script_dir}"/bdjuno.log 2>&1 &
+    # "${bin}" --home "${script_dir}" start >"${script_dir}"/bdjuno.log
 }
 
 cmd=$1

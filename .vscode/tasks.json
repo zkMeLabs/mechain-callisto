@@ -7,13 +7,13 @@
       "command": "./localup.sh reset",
       "options": {
         "cwd": "${workspaceFolder}/deployment/localup"
-      },
-      "problemMatcher": []
+      }
     },
     {
       "type": "shell",
       "label": "build",
-      "command": "make build"
+      "command": "make build",
+      "problemMatcher": []
     }
   ]
 }
