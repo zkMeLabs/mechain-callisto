@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch local",
+      "name": "localup",
       "type": "go",
       "request": "launch",
       "mode": "auto",
@@ -21,7 +21,7 @@
       "mode": "auto",
       "program": "${workspaceFolder}/cmd/bdjuno",
       "args": ["start", "--home", "${workspaceFolder}/deployment/testnet"],
-      "cwd": "${workspaceFolder}/deployment/devnetup",
+      "cwd": "${workspaceFolder}/deployment/testnet",
       "preLaunchTask": "build"
     }
   ]
