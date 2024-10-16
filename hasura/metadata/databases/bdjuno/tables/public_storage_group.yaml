@@ -8,11 +8,3 @@ select_permissions:
       filter: {}
       limit: 100
       allow_aggregations: true
-array_relationships:
-  - name: group_members
-    using:
-      foreign_key_constraint_on:
-        column: group_id
-        table:
-          name: group_member
-          schema: public

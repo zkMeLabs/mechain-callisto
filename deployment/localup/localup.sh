@@ -5,14 +5,14 @@ bin_name=bdjuno
 bin=${project_path}/build/${bin_name}
 
 function stop() {
-    docker compose down
+    docker compose -f "${basedir}"/docker-compose.yaml down
     rm -rf "${basedir}"/data
     rm -rf "${basedir}"/bdjuno.log
     ps -ef | grep "${bin_name}" | awk '{print $2}' | xargs kill
 }
 
 function start() {
-    docker compose up -d
+    docker compose -f "${basedir}"/docker-compose.yaml up -d
     echo "wait 30s for graphql engine start..."
     for ((i = 30; i > 0; i -= 3)); do
         echo "please wait ${i}s..."

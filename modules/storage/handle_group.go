@@ -160,6 +160,7 @@ func (m *Module) handleUpdateGroupMember(ctx context.Context, block *tmctypes.Re
 				UpdateTxHash:    txHash,
 				UpdateEVMTxHash: evmTxHash,
 				Removed:         false,
+				// ExpirationTime:  0,
 			}
 			if memberToAdd.ExpirationTime != nil {
 				groupItem.ExpirationTime = *memberToAdd.ExpirationTime

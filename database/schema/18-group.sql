@@ -18,16 +18,8 @@ CREATE TABLE groups (
     update_evm_tx_hash TEXT NOT NULL,
     removed BOOLEAN DEFAULT FALSE,
     tags JSONB,
-    UNIQUE (group_id)
+    CONSTRAINT idx_account_group UNIQUE (account_address, group_id)
 );
-CREATE INDEX idx_group_owner ON "groups"(owner_address);
-CREATE INDEX idx_group_group_id ON "groups"(group_id);
-CREATE INDEX idx_group_group_name ON "groups"(group_name);
--- group_member table
-CREATE TABLE group_member (
-    id SERIAL PRIMARY KEY,
-    group_id TEXT NOT NULL,
-    member TEXT NOT NULL,
-    expiration_time TIMESTAMPTZ,
-    CONSTRAINT fk_group FOREIGN KEY (group_id) REFERENCES groups(group_id)
-);
+CREATE INDEX idx_owner ON groups(owner_address);
+CREATE INDEX idx_group_id ON groups(group_id);
+CREATE INDEX idx_group_name ON groups(group_name);
