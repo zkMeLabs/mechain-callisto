@@ -48,5 +48,5 @@ type GroupMember struct {
 }
 
 func (g GroupMember) TableName() string {
-	return "group_member"
+	return "permission"
 }
