@@ -61,7 +61,7 @@ func (m Module) ExportEventsInTxs(ctx context.Context, block *tmctypes.ResultBlo
 func (m *Module) ExtractEvent(ctx context.Context, block *tmctypes.ResultBlock, tx *junotypes.Tx) (map[string][]interface{}, error) {
 	allSQL := make(map[string][]interface{})
 	for _, event := range tx.Events {
-		sqls, err := m.ExtractGroupEventStatements(ctx, block, tx.TxHash, sdk.Event(event))
+		sqls, err := m.ExtractSpEventStatements(ctx, block, tx.TxHash, sdk.Event(event))
 		if err != nil {
 			log.Err(err)
 			continue
@@ -73,7 +73,7 @@ func (m *Module) ExtractEvent(ctx context.Context, block *tmctypes.ResultBlock, 
 	return allSQL, nil
 }
 
-func (m *Module) ExtractGroupEventStatements(ctx context.Context, block *tmctypes.ResultBlock, txHash string, event sdk.Event) (map[string][]interface{}, error) {
+func (m *Module) ExtractSpEventStatements(ctx context.Context, block *tmctypes.ResultBlock, txHash string, event sdk.Event) (map[string][]interface{}, error) {
 	if !StorageProviderEvents[event.Type] {
 		return nil, nil
 	}
