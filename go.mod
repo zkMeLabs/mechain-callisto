@@ -220,7 +220,7 @@ require (
 replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 	github.com/cosmos/cosmos-sdk => github.com/evmos/cosmos-sdk v0.47.4-evmos.2
-	github.com/cosmos/gogoproto => github.com/zkMeLabs/gogoproto v1.4.10-mechain.1
+	github.com/cosmos/gogoproto => github.com/cosmos/gogoproto v1.4.8
 	github.com/ethereum/go-ethereum => github.com/evmos/go-ethereum v1.10.26-evmos-rc2
 	github.com/forbole/juno/v5 => github.com/zkMeLabs/mechain-callisto-juno/v5 v5.2.1-0.20240825054004-0b34bd6a4717
 	github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.9.1
