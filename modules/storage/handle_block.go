@@ -11,12 +11,12 @@ import (
 )
 
 const (
-	EventTypeCreateGroup  = "greenfield.storage.EventCreateGroup"
-	EventTypeDeleteGroup  = "greenfield.storage.EventDeleteGroup"
-	EventTypeCreateBucket = "greenfield.storage.EventCreateBucket"
-	EventTypeDeleteBucket = "greenfield.storage.EventDeleteBucket"
-	EventTypeCreateObject = "greenfield.storage.EventCreateObject"
-	EventTypeDeleteObject = "greenfield.storage.EventCancelCreateObject"
+	EventTypeCreateGroup  = "mechain.storage.EventCreateGroup"
+	EventTypeDeleteGroup  = "mechain.storage.EventDeleteGroup"
+	EventTypeCreateBucket = "mechain.storage.EventCreateBucket"
+	EventTypeDeleteBucket = "mechain.storage.EventDeleteBucket"
+	EventTypeCreateObject = "mechain.storage.EventCreateObject"
+	EventTypeDeleteObject = "mechain.storage.EventCancelCreateObject"
 	EventTypeEthereumTx   = "ethereum_tx"
 )
 
