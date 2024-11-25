@@ -10,7 +10,7 @@ import (
 type Bucket struct {
 	ID                         uint64          `gorm:"column:id;primaryKey;autoIncrement"`
 	BucketID                   string          `gorm:"column:bucket_id;type:TEXT;uniqueIndex:idx_bucket_id"`
-	BucketName                 string          `gorm:"column:bucket_name;type:VARCHAR(64);uniqueIndex:idx_bucket_name"`
+	BucketName                 string          `gorm:"column:bucket_name;type:VARCHAR(64)"`
 	OwnerAddress               string          `gorm:"column:owner_address;type:TEXT;index:idx_owner"`
 	PaymentAddress             string          `gorm:"column:payment_address;type:TEXT"`
 	GlobalVirtualGroupFamilyId uint32          `gorm:"column:global_virtual_group_family_id;index:idx_vgf_id"`

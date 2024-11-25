@@ -175,6 +175,7 @@ func (m *Module) handleDeleteBucket(ctx context.Context, block *tmctypes.ResultB
 		BucketName:                 deleteBucket.BucketName,
 		OwnerAddress:               deleteBucket.Owner,
 		GlobalVirtualGroupFamilyId: deleteBucket.GlobalVirtualGroupFamilyId,
+		DeleteAt:                   block.Block.Height,
 		Removed:                    true,
 		UpdateAt:                   block.Block.Height,
 		UpdateTxHash:               txHash,

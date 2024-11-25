@@ -25,9 +25,8 @@ function start() {
     # echo "Initializing the configuration..."
     # ${bin} --home "${basedir}" parse genesis-file --genesis-file-path ./genesis.json
 
-    # echo "run BDjuno...."
-    # nohup "${bin}" start --home "${basedir}" >"${basedir}"/bdjuno.log 2>&1 &
-    # "${bin}" --home "${basedir}" start >"${basedir}"/bdjuno.log
+    echo "run BDjuno...."
+    nohup "${bin}" start --home "${basedir}" >"${basedir}"/bdjuno.log 2>&1 &
 }
 
 cmd=$1
