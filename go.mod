@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	cosmossdk.io/errors v1.0.0
-	cosmossdk.io/math v1.0.1
+	cosmossdk.io/math v1.4.0
 	cosmossdk.io/simapp v0.0.0-20230608160436-666c345ad23d
 	github.com/cometbft/cometbft v0.37.2
 	github.com/cosmos/cosmos-proto v1.0.0-beta.3
@@ -26,7 +26,7 @@ require (
 	github.com/rs/zerolog v1.29.1
 	github.com/shopspring/decimal v1.4.0
 	github.com/spf13/cobra v1.7.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20230629202037-9506855d4529
 	google.golang.org/grpc v1.56.3
 	google.golang.org/protobuf v1.31.0
@@ -214,7 +214,7 @@ require (
 	gorm.io/driver/mysql v1.5.6 // indirect
 	nhooyr.io/websocket v1.8.7 // indirect
 	pgregory.net/rapid v0.5.5 // indirect
-	sigs.k8s.io/yaml v1.3.0 // indirect
+	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
 replace (
