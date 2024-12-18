@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/hex"
 	"regexp"
 	"strings"
 
@@ -176,7 +177,7 @@ func (r *GRN) ParseFromString(res string, wildcards bool) error {
 		}
 	case abbr == GroupTypeAbbr:
 		r.resType = resource.RESOURCE_TYPE_GROUP
-		r.groupOwner, err = sdk.AccAddressFromHexUnsafe(acc)
+		r.groupOwner, err = hex.DecodeString(acc[2:])
 		if err != nil {
 			return gnfderrors.ErrInvalidGRN.Wrapf("invalid group owner account, err : %s", err)
 		}

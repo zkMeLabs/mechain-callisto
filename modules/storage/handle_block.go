@@ -11,13 +11,7 @@ import (
 )
 
 const (
-	EventTypeCreateGroup  = "mechain.storage.EventCreateGroup"
-	EventTypeDeleteGroup  = "mechain.storage.EventDeleteGroup"
-	EventTypeCreateBucket = "mechain.storage.EventCreateBucket"
-	EventTypeDeleteBucket = "mechain.storage.EventDeleteBucket"
-	EventTypeCreateObject = "mechain.storage.EventCreateObject"
-	EventTypeDeleteObject = "mechain.storage.EventCancelCreateObject"
-	EventTypeEthereumTx   = "ethereum_tx"
+	EventTypeEthereumTx = "ethereum_tx"
 )
 
 // HandleBlock implements modules.BlockModule
@@ -74,16 +68,18 @@ func (m *Module) ExtractEvent(ctx context.Context, block *tmctypes.ResultBlock, 
 type ExtractFunc func(ctx context.Context, block *tmctypes.ResultBlock, txHash, evmTxHash string, event sdk.Event) (map[string][]interface{}, error)
 
 func (m *Module) getExtractEventFunc(event sdk.Event) ExtractFunc {
-	if BucketEvents[event.Type] {
+	switch {
+	case BucketEvents[event.Type]:
 		return m.ExtractBucketEventStatements
-	}
-	if ObjectEvents[event.Type] {
+	case ObjectEvents[event.Type]:
 		return m.ExtractObjectEventStatements
-	}
-	if GroupEvents[event.Type] {
+	case GroupEvents[event.Type]:
 		return m.ExtractGroupEventStatements
+	case TagEvents[event.Type]:
+		return m.ExtractTagEventStatements
+	default:
+		return nil
 	}
-	return nil
 }
 
 func findEVMTxHash(events []abci.Event) string {

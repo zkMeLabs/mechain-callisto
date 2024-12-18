@@ -25,7 +25,7 @@ func (db *DB) CreateGroupToSQL(ctx context.Context, groupMembers []*models.Group
 }
 
 func (db *DB) UpdateGroupToSQL(ctx context.Context, group *models.Group) (string, []interface{}) {
-	stat := db.G.Session(&gorm.Session{DryRun: true}).Table((&models.Group{}).TableName()).Where("account_address = ? AND group_id = ? ", group.AccountAddress, group.GroupID).Updates(group).Statement
+	stat := db.G.Session(&gorm.Session{DryRun: true}).Table((&models.Group{}).TableName()).Where("group_id = ? ", group.GroupID).Updates(group).Statement
 	return stat.SQL.String(), stat.Vars
 }
 
