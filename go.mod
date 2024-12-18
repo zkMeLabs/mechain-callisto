@@ -25,7 +25,7 @@ require (
 	github.com/proullon/ramsql v0.1.2
 	github.com/rs/zerolog v1.29.1
 	github.com/shopspring/decimal v1.4.0
-	github.com/spf13/cobra v1.7.0
+	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.8.4
 	google.golang.org/genproto/googleapis/api v0.0.0-20230629202037-9506855d4529
 	google.golang.org/grpc v1.56.3
