@@ -26,7 +26,7 @@ require (
 	github.com/rs/zerolog v1.29.1
 	github.com/shopspring/decimal v1.4.0
 	github.com/spf13/cobra v1.7.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.10.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20230629202037-9506855d4529
 	google.golang.org/grpc v1.56.3
 	google.golang.org/protobuf v1.31.0
